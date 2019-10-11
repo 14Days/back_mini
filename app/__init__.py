@@ -1,10 +1,7 @@
 from aiohttp import web
 import aiohttp_cors
+from .router import register_routes
 from .models import connect_db
-
-
-async def hello(request):
-    return web.Response(text="Hello, world")
 
 
 async def create_app(config) -> web.Application:
@@ -13,7 +10,8 @@ async def create_app(config) -> web.Application:
     :return: web.Application
     """
     app = web.Application()
-    app.add_routes([web.get('/', hello)])
+
+    register_routes(app)
 
     # 配置跨域访问
     cors = aiohttp_cors.setup(app, defaults={

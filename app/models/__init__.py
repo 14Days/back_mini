@@ -1,4 +1,3 @@
-import sqlalchemy as sa
 from aiomysql.sa import create_engine
 
 engine = None
