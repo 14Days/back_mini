@@ -4,7 +4,7 @@ from app.config import parse_config
 
 config = parse_config()
 
-app = create_app()
+app = create_app(config)
 
 if __name__ == '__main__':
     web.run_app(app, port=config.get('app').get('port'))

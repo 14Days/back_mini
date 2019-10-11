@@ -1,12 +1,13 @@
 from aiohttp import web
 import aiohttp_cors
+from .models import connect_db
 
 
 async def hello(request):
     return web.Response(text="Hello, world")
 
 
-def create_app() -> web.Application:
+async def create_app(config) -> web.Application:
     """
     返回aiohttp应用实例
     :return: web.Application
@@ -25,5 +26,7 @@ def create_app() -> web.Application:
 
     for route in list(app.router.routes()):
         cors.add(route)
+
+    await connect_db(config.get('database'))
 
     return app

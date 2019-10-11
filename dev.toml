@@ -1,2 +1,10 @@
 [app]
 port = 8080
+
+[database]
+pool = 5
+user = 'root'
+password = '613fb94fbd740f66'
+host = 'wghtstudio.cn'
+port = 3306
+db = 'home_designer'
