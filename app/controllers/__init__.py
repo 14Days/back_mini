@@ -1,7 +1,9 @@
 from aiohttp import web
+from .ping import ping
 
 
-async def hello(request: web.BaseRequest):
-    return web.json_response({
-        'status': 'success'
-    })
+def register_routes(app: web.Application):
+    ping_app = web.Application()
+    ping_app.add_routes(ping)
+
+    app.add_subapp('/ping', ping_app)
