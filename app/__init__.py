@@ -1,7 +1,7 @@
 from aiohttp import web
 import aiohttp_cors
 from .controllers import register_routes
-from .models import connect_db, close_db
+from .models import engine
 
 
 async def create_app(config) -> web.Application:
@@ -25,8 +25,8 @@ async def create_app(config) -> web.Application:
     for route in list(app.router.routes()):
         cors.add(route)
 
-    await connect_db(config.get('database'))
+    await engine.connect_db(config.get('database'))
 
-    app.on_shutdown.append(close_db)
+    app.on_shutdown.append(engine.close_db)
 
     return app
