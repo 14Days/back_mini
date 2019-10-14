@@ -1,6 +1,8 @@
 import sqlalchemy as sa
+from aiomysql.sa import connection
 
 metadata = sa.MetaData()
+conn = connection()
 
 notice = sa.Table(
     'notice', metadata,
@@ -11,4 +13,7 @@ notice = sa.Table(
     sa.Column('push_day', sa.DATETIME, nullable=False)
 )
 
+
+async def return_notice():
+    sql = notice.select()
 
