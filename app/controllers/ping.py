@@ -1,20 +1,16 @@
 from aiohttp import web
+from .base import Base
 from app.models.notice import Notice
 
-ping = web.RouteTableDef()
 
+class Ping(Base):
+    async def hello(self, request: web.BaseRequest):
+        notice = Notice()
+        res = await notice.select_all()
+        data = []
+        for item in res:
+            temp = dict(item)
+            temp['push_day'] = temp['push_day'].strftime('%Y-%m-%d')
+            data.append(temp)
 
-@ping.get('')
-async def hello(request: web.BaseRequest):
-    notice = Notice()
-    res = await notice.select_all()
-    data = []
-    for item in res:
-        temp = dict(item)
-        temp['push_day'] = temp['push_day'].strftime('%Y-%m-%d')
-        data.append(temp)
-
-    return web.json_response({
-        'status': 'success',
-        'data': data
-    })
+        return self.success_warp(data)

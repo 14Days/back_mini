@@ -2,7 +2,7 @@ from aiohttp import web
 import aiohttp_cors
 from .utils.logger import create_base_log
 from .middlewares.log import log_middleware
-from .controllers import register_routes
+from .router import register_routes
 from .models import engine
 
 
