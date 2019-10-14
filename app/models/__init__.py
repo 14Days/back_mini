@@ -1,14 +1,20 @@
 import logging
-from aiomysql.sa import create_engine
+from aiomysql.sa import create_engine, Error
+
+logger = logging.getLogger('main.models')
 
 
 class DBEngine:
     engine = None
 
     async def connect_db(self, config):
-        self.engine = await create_engine(minsize=config.get('pool'), user=config.get('user'),
-                                          password=config.get('password'), host=config.get('host'),
-                                          port=config.get('port'), db=config.get('db'))
+        try:
+            self.engine = await create_engine(minsize=config.get('pool'), user=config.get('user'),
+                                              password=config.get('password'), host=config.get('host'),
+                                              port=config.get('port'), db=config.get('db'))
+            logger.info('Connect db successfully')
+        except Error as e:
+            logger.error('Failed to connect db', exc_info=True)
 
     async def close_db(self, app):
         self.engine.close()

@@ -1,5 +1,8 @@
 [app]
 port = 8080
+mode = 'dev'
+[app.log]
+    format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s'
 
 [database]
 pool = 5
