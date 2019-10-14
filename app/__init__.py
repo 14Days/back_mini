@@ -1,8 +1,9 @@
 from aiohttp import web
 import aiohttp_cors
+from .utils.logger import create_base_log
+from .middlewares.log import log_middleware
 from .controllers import register_routes
 from .models import engine
-from .utils.logger import create_base_log
 
 
 async def create_app(config) -> web.Application:
@@ -15,6 +16,7 @@ async def create_app(config) -> web.Application:
 
     # 获取顶级实例注册路由
     app = web.Application()
+    app.middlewares.append(log_middleware)
     register_routes(app)
 
     # 配置跨域访问
@@ -33,6 +35,6 @@ async def create_app(config) -> web.Application:
     await engine.connect_db(config.get('database'))
 
     # 注册关闭函数
-    app.on_shutdown.append(engine.close_db)
+    app.on_cleanup.append(engine.close_db)
 
     return app
