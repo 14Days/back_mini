@@ -1,6 +1,7 @@
 import sqlalchemy as sa
-from app.models import engine
 import logging
+from app.models import engine
+from aiomysql.sa import Error
 
 logger = logging.getLogger('main.user')
 metadata = sa.MetaData()
@@ -25,7 +26,19 @@ class User:
                     return True
                 else:
                     return False
-        except ConnectionError as e:
+        except Error as e:
+            logger.error('Failed to select data from database')
+
+    @classmethod
+    async def check_user(cls, name):
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(cls.user.select().where(cls.user.name == name))
+                if await res.fetchone() is None:
+                    return True
+                else:
+                    return False
+        except Error as e:
             logger.error('Failed to select data from database')
 
     @classmethod
@@ -35,5 +48,5 @@ class User:
                 task = await conn.begin()
                 await conn.execute(cls.user.insert().values(username=name, password=password, phone=phone, open_id='1'))
                 await task.commit()
-        except IOError as e:
+        except Error as e:
             logger.error('Failed to insert data to database')

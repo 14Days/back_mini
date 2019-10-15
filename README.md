@@ -28,7 +28,7 @@
         ```json
         {
             "status": "error",
-            "data": "短短信发送失败"
+            "data": "短信发送失败"
         }
         ```
 
@@ -38,12 +38,14 @@
 
     - 参数
 
-      | key      | value  |
-      | -------- | ------ |
-      | phone    | 1      |
-      | name     | Mike   |
-      | code     | 1      |
-      | password | 123456 |
+      ```json
+      {
+      	"phone": "13588213889",
+      	"code": "6143",
+      	"password": "123456",
+      	"name": "Mike"
+      }
+      ```
 
     - 返回数据格式
 

@@ -10,7 +10,10 @@ class UserHandler(Base):
         phone_number = request.query.get('phone')
 
         if phone_number is None:
-            return self.fail_warp('电话号码不能为空')
+            return self.fail_warp('缺少参数')
+
+        if phone_number == '':
+            return self.fail_warp('参数不能为空字符串')
 
         if not await User.check_phone(phone_number):
             return self.fail_warp('已存在电话号码')
@@ -24,12 +27,22 @@ class UserHandler(Base):
 
     async def register_account(self, request: web.BaseRequest):
         data = await request.json()
+        name = data.get('name')
+        password = data.get('password')
+        phone = data.get('phone')
+        code = data.get('code')
 
-        if data.get('phone') is None or data.get('code') is None:
+        if phone is None or code is None:
             return self.fail_warp('缺少参数')
 
-        if data.get('code') == await get_code_in_redis(data.get('phone')):
-            await User.add_user(data.get('username'), data.get('password'), data.get('phone'))
+        if phone == '' or code == '' or name == '' or password == '':
+            return self.fail_warp('参数不能为空')
+
+        if not await User.check_user(name):
+            return self.fail_warp('用户名已存在')
+
+        if code == await get_code_in_redis(phone):
+            await User.add_user(name, password, phone)
             return self.success_warp('验证成功')
         else:
             return self.fail_warp('验证码错误')
