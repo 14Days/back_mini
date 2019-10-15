@@ -1,6 +1,6 @@
 from aiohttp import web
 from .base import Base
-from utils.message import create_verify_code, set_code_in_redis, send_message, get_code_in_redis
+from app.utils.message import create_verify_code, set_code_in_redis, send_message, get_code_in_redis
 from app.models.user import User
 
 
@@ -23,20 +23,13 @@ class UserHandler(Base):
         return self.success_warp('短信发送成功')
 
     async def register_account(self, request: web.BaseRequest):
-        code = request.query.get('code')
-        phone_number = request.query.get('phone')
-        name = request.query.get('name')
-        password = request.query.get('password')
+        data = await request.json()
 
-        if phone_number is None or code is None:
+        if data.get('phone') is None or data.get('code') is None:
             return self.fail_warp('缺少参数')
 
-        if code == await get_code_in_redis(phone_number):
-            print(name)
-            print(phone_number)
-            print(password)
-            await User.add_user(name, password, phone_number)
+        if data.get('code') == await get_code_in_redis(data.get('phone')):
+            await User.add_user(data.get('username'), data.get('password'), data.get('phone'))
             return self.success_warp('验证成功')
         else:
-            print(code)
-            return self.fail_warp('验证失败')
+            return self.fail_warp('验证码错误')

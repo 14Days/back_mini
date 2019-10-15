@@ -32,12 +32,8 @@ class User:
     async def add_user(cls, name, password, phone):
         try:
             async with engine.engine.acquire() as conn:
-                print(cls.user.insert().values(username=name, password=password, phone=phone, open_id='1'))
-                print(name)
-                print(password)
-                print(phone)
+                task = await conn.begin()
                 await conn.execute(cls.user.insert().values(username=name, password=password, phone=phone, open_id='1'))
+                await task.commit()
         except IOError as e:
             logger.error('Failed to insert data to database')
-
-
