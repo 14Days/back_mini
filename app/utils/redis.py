@@ -9,7 +9,7 @@ class Redis:
 
     async def connect_redis(self, config):
         try:
-            self.redis = await aioredis.create_connection(
+            self.redis = await aioredis.create_redis(
                 'redis://:{}@{}:{}/0?encoding=utf-8'.format(config['password'], config['host'], config['port']))
             logger.info('Connect redis successfully')
         except aioredis.errors as e:
