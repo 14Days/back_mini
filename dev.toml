@@ -11,3 +11,8 @@ password = '613fb94fbd740f66'
 host = 'wghtstudio.cn'
 port = 3306
 db = 'home_designer'
+
+[redis]
+password = 'gyk199941'
+host = 'wghtstudio.cn'
+port = 6379

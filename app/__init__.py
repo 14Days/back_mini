@@ -4,6 +4,7 @@ from .utils.logger import create_base_log
 from .middlewares.log import log_middleware
 from .router import register_routes
 from .models import engine
+from .utils.redis import redis
 
 
 async def create_app(config) -> web.Application:
@@ -34,7 +35,11 @@ async def create_app(config) -> web.Application:
     # 连接数据库
     await engine.connect_db(config.get('database'))
 
+    # 连接redis
+    await redis.connect_redis(config.get('redis'))
+
     # 注册关闭函数
     app.on_cleanup.append(engine.close_db)
+    app.on_cleanup.append(redis.close_redis)
 
     return app
