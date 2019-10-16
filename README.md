@@ -4,7 +4,7 @@
 
   - 请求验证码接口
 
-    - Url：http://{{host}}/user/code
+    - url：http://{{host}}/user/code
 
     - method: get
 
