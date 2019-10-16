@@ -6,7 +6,7 @@
 
     - Url：http://{{host}}/user/code
 
-    - Method: get
+    - method: get
 
     - 参数
 
@@ -38,7 +38,7 @@
 
     - Url：http://{{host}}/user/account
 
-    - Method: post
+    - method: post
 
     - 参数（Json格式）
 
@@ -76,7 +76,7 @@
 
   - Url: http://{{host}}/user/authorization
 
-  - Method: post
+  - method: post
 
   - 参数（Json格式）
 
