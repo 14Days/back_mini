@@ -4,7 +4,7 @@
 
   - 请求验证码接口
 
-    - url：http://{{host}}/user/code
+    - Url：http://{{host}}/user/code
 
     - Method: get
 
@@ -36,7 +36,7 @@
 
   - 发送验证码接口
 
-    - url：http://{{host}}/user/account
+    - Url：http://{{host}}/user/account
 
     - Method: post
 
@@ -70,10 +70,11 @@
             "data": "验证码错误"
         }
         ```
+        
 
 - 登录接口
 
-  - url: http://{{host}}/user/authorization
+  - Url: http://{{host}}/user/authorization
 
   - Method: post
 
