@@ -1,6 +1,9 @@
 import sqlalchemy as sa
-from . import engine
+from app.models import engine
+from aiomysql.sa import Error
+import logging
 
+logger = logging.getLogger('main.notice')
 metadata = sa.MetaData()
 
 
@@ -14,7 +17,11 @@ class Notice:
         sa.Column('push_day', sa.DateTime, nullable=False)
     )
 
-    async def select_all(self):
-        async with engine.engine.acquire() as conn:
-            res = await conn.execute(self.notice.select())
-            return await res.fetchall()
+    @classmethod
+    async def get_notice(cls) -> dict:
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(cls.notice.select())
+                return await res.fetchone()
+        except Error as e:
+            logger.error('Failed to select notice from database')

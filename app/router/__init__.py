@@ -1,6 +1,7 @@
 from aiohttp import web
 from app.controllers.ping import Ping
 from app.controllers.user import UserHandler
+from app.controllers.notice import NoticeHandler
 
 
 def register_routes(app: web.Application):
@@ -14,5 +15,10 @@ def register_routes(app: web.Application):
     user_app.router.add_post('/account', user.register_account)
     user_app.router.add_post('/authorization', user.login)
 
+    notice_app = web.Application()
+    notice = NoticeHandler()
+    notice_app.router.add_get('', notice.get_notice)
+
     app.add_subapp('/ping', ping_app)
     app.add_subapp('/user', user_app)
+    app.add_subapp('/notice', notice_app)
