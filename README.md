@@ -4,7 +4,9 @@
 
   - 请求验证码接口
 
-    - url：wghtstudio.cn/user/code
+    - url：http:{{host}}/user/code
+
+    - Method: get
 
     - 参数
 
@@ -34,9 +36,11 @@
 
   - 发送验证码接口
 
-    - url：wghtstudio.cn/user/account
+    - url：http:{{host}}/user/account
 
-    - 参数
+    - Method: post
+
+    - 参数（Json格式）
 
       ```json
       {
@@ -66,4 +70,40 @@
             "data": "验证码错误"
         }
         ```
+
+- 登录接口
+
+  - url: http:{{host}}/user/authorization
+
+  - Method: post
+
+  - 参数（Json格式）
+
+    ```json
+    {
+    	"name": "guyunkai",
+    	"password": "123456"
+    }
+    ```
+
+  - 返回数据格式
+
+    - 请求成功
+
+      ```json
+      {
+          "status": "success",
+          "err_msg": "登录成功"
+      }
+      ```
+
+    - 请求失败
+
+      ```json
+      {
+          "status": "error",
+          "err_msg": "登录失败"
+      }
+      ```
+
 

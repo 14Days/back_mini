@@ -24,3 +24,5 @@ async def log_middleware(request, handler):
         'body': response.body
     })
     return response
+
+

@@ -33,7 +33,7 @@ class User:
     async def check_user(cls, name):
         try:
             async with engine.engine.acquire() as conn:
-                res = await conn.execute(cls.user.select().where(cls.user.name == name))
+                res = await conn.execute(cls.user.select().where(cls.user.c.username == name))
                 if await res.fetchone() is None:
                     return True
                 else:
@@ -50,3 +50,18 @@ class User:
                 await task.commit()
         except Error as e:
             logger.error('Failed to insert data to database')
+
+    @classmethod
+    async def check_password(cls, name, password):
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(
+                    cls.user.select().where(cls.user.c.username == name).where(cls.user.c.password == password)
+                )
+
+                if await res.fetchone() is None:
+                    return False
+                else:
+                    return True
+        except Error as e:
+            logger.error('Failed to confirm password from database')

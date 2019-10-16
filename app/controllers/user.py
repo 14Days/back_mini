@@ -4,8 +4,8 @@ from app.utils.message import create_verify_code, set_code_in_redis, send_messag
 from app.models.user import User
 
 
-# 注册接口
 class UserHandler(Base):
+    # 注册接口
     async def send_verify_code(self, request: web.BaseRequest):
         phone_number = request.query.get('phone')
 
@@ -46,3 +46,23 @@ class UserHandler(Base):
             return self.success_warp('验证成功')
         else:
             return self.fail_warp('验证码错误')
+
+    # 登录接口
+    async def login(self, request: web.BaseRequest):
+        data = await request.json()
+        name = data.get('name')
+        password = data.get('password')
+
+        if name is None or password is None:
+            return self.fail_warp('缺少参数')
+
+        if name == '' or password == '':
+            return self.fail_warp('参数不能为空')
+
+        if await User.check_user(name):
+            return self.fail_warp('用户名不存在')
+
+        if await User.check_password(name, password):
+            return self.success_warp('登录成功')
+        else:
+            return self.fail_warp('登录失败')
