@@ -4,7 +4,7 @@
 
   - 请求验证码接口
 
-    - url：http:{{host}}/user/code
+    - url：http://{{host}}/user/code
 
     - Method: get
 
@@ -36,7 +36,7 @@
 
   - 发送验证码接口
 
-    - url：http:{{host}}/user/account
+    - url：http://{{host}}/user/account
 
     - Method: post
 
@@ -73,7 +73,7 @@
 
 - 登录接口
 
-  - url: http:{{host}}/user/authorization
+  - url: http://{{host}}/user/authorization
 
   - Method: post
 
@@ -93,7 +93,7 @@
       ```json
       {
           "status": "success",
-          "err_msg": "登录成功"
+          "data": "headers.payloads.signiture"
       }
       ```
 

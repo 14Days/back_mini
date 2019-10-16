@@ -2,6 +2,7 @@ from aiohttp import web
 from .base import Base
 from app.utils.message import create_verify_code, set_code_in_redis, send_message, get_code_in_redis
 from app.models.user import User
+from app.utils.token import create_token
 
 
 class UserHandler(Base):
@@ -63,6 +64,7 @@ class UserHandler(Base):
             return self.fail_warp('用户名不存在')
 
         if await User.check_password(name, password):
-            return self.success_warp('登录成功')
+            token = create_token(name, password)
+            return self.success_warp(str(token))
         else:
             return self.fail_warp('登录失败')
