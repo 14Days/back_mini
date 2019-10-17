@@ -2,6 +2,7 @@ from aiohttp import web
 from app.controllers.ping import Ping
 from app.controllers.user import UserHandler
 from app.controllers.notice import NoticeHandler
+from app.controllers.img import ImgHandler
 
 
 def register_routes(app: web.Application):
@@ -19,6 +20,12 @@ def register_routes(app: web.Application):
     notice = NoticeHandler()
     notice_app.router.add_get('', notice.get_notice)
 
+    img_app = web.Application()
+    img = ImgHandler()
+    img_app.router.add_get('/cycle', img.get_six_imgs)
+    img_app.router.add_get('/imgs', img.get_untabed_imgs)
+
     app.add_subapp('/ping', ping_app)
     app.add_subapp('/user', user_app)
     app.add_subapp('/notice', notice_app)
+    app.add_subapp('/img', img_app)

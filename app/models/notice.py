@@ -18,7 +18,7 @@ class Notice:
     )
 
     @classmethod
-    async def get_notice(cls) -> dict:
+    async def get_notice(cls) -> list:
         try:
             async with engine.engine.acquire() as conn:
                 res = await conn.execute(cls.notice.select())
