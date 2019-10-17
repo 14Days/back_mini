@@ -6,7 +6,7 @@
 
     - Url：http://{{host}}/user/code
 
-    - method: get
+    - Method: get
 
     - 参数
 
