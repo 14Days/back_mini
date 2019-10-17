@@ -1,6 +1,6 @@
 from .base import Base
 from aiohttp import web
-from models.notice import Notice
+from app.models.notice import Notice
 
 
 class NoticeHandler(Base):

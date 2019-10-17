@@ -1,181 +1,166 @@
 ## 接口文档
 
-- 注册接口
+### 注册
 
-  - 请求验证码接口
+#### 获取验证码
 
-    - Url：http://{{host}}/user/code
+- URL：/user/code
 
-    - Method: get
+- method：GET
 
-    - 参数
+- args：
 
-      | key | value |
-      | ------ | ------ |
-      | phone | 13588213889 |
+  |  key  |    value     |
+  | :---: | :----------: |
+  | phone | phone number |
 
-    - 返回数据格式
+- response：
 
-      - 请求成功
+  ```json
+  {
+    "status": "success",
+    "data": "msg"
+  }
+  ```
 
-        ```json
-        {
-            "status": "success",
-            "data": "短信发送成功"
-        }
-        ```
+  ```json
+  {
+    "status": "error",
+    "err_msg": "msg"
+  }
+  ```
+  
 
-      - 请求失败
+#### 注册用户
 
-        ```json
-        {
-            "status": "error",
-            "data": "短信发送失败"
-        }
-        ```
+- URL：/user/account
 
-  - 发送验证码接口
+- method：POST
 
-    - Url：http://{{host}}/user/account
+- args：
 
-    - method: post
+  ```json
+  {
+    "phone": "18807424758",
+    "code": "6143",
+    "password": "123456",
+    "name": "Mike"
+  }
+  ```
+  
+- response：
 
-    - 参数（Json格式）
+  ```json
+  {
+    "status": "success",
+    "data": "msg"
+  }
+  ```
 
-      ```json
-      {
-      	"phone": "13588213889",
-      	"code": "6143",
-      	"password": "123456",
-      	"name": "Mike"
-      }
-      ```
+  ```json
+  {
+    "status": "error",
+    "err_msg": "msg"
+  }
+  ```
 
-    - 返回数据格式
+### 用户登录
 
-      - 请求成功
+- URL：/user/authorization
 
-        ```json
-        {
-            "status": "success",
-            "data": "验证成功"
-        }
-        ```
+- method：POST
 
-      - 请求失败
+- args：
 
-        ```json
-        {
-            "status": "error",
-            "data": "验证码错误"
-        }
-        ```
-        
+  ```json
+  {
+    "name": "guyunkai",
+    "password": "123456"
+  }
+  ```
 
-- 登录接口
+- response：
 
-  - Url: http://{{host}}/user/authorization
+  ```json
+  {
+    "status": "success",
+    "data": "token"
+  }
+  ```
 
-  - method: post
+  ```json
+  {
+    "status": "error",
+    "err_msg": "msg"
+  }
+  ```
 
-  - 参数（Json格式）
 
-    ```json
-    {
-    	"name": "guyunkai",
-    	"password": "123456"
-    }
-    ```
+### 公告接口
 
-  - 返回数据格式
+- URL：/notice
 
-    - 请求成功
+- method：GET
 
-      ```json
-      {
-          "status": "success",
-          "data": "headers.payloads.signiture"
-      }
-      ```
+- args：none
 
-    - 请求失败
+- response：
 
-      ```json
-      {
-          "status": "error",
-          "err_msg": "登录失败"
-      }
-      ```
+  ```json
+  {
+    "status": "success",
+    "data": "内容内容内容内容"
+  }
+  ```
 
-- 公告接口
+### 轮播图接口
 
-  - Url: http://{{host}}/notice
+- URL：/img/cycle
 
-  - Method: get
+- method：GET
 
-  - 参数 （无）
+- args：none
 
-  - 返回数据格式
+- response：
 
-    - 请求成功
+  ```json
+  {
+    "status": "success",
+    "data": [
+      "http://pull.wghtstudio.cn/img/1.jpg",
+      "http://pull.wghtstudio.cn/img/2.jpg",
+      "http://pull.wghtstudio.cn/img/3.jpg",
+      "http://pull.wghtstudio.cn/img/4.jpg",
+      "http://pull.wghtstudio.cn/img/5.jpg",
+      "http://pull.wghtstudio.cn/img/6.jpg"
+    ]
+  }
+  ```
 
-      ```json
-      {
-          "status": "success",
-          "data": "内容内容内容内容"
-      }
-      ```
+### 图片接口
 
-- 轮播图接口
+- URL：/img/imgs
 
-  - Url: http://{{host}}/img/cycle
+- method：GET
 
-  - method: get
+- args：
 
-  - 参数 （无）
+  | key  | value |
+  | ---- | ----- |
+  | num  | 1     |
 
-  - 返回数据格式
+- 请求成功
 
-    - 请求成功
-
-      ```json
-      {
-          "status": "success",
-          "data": [
-              "http://pull.wghtstudio.cn/img/1.jpg",
-              "http://pull.wghtstudio.cn/img/2.jpg",
-              "http://pull.wghtstudio.cn/img/3.jpg",
-              "http://pull.wghtstudio.cn/img/4.jpg",
-              "http://pull.wghtstudio.cn/img/5.jpg",
-              "http://pull.wghtstudio.cn/img/6.jpg"
-          ]
-      }
-      ```
-
-- 图片接口
-
-  - 请求图片接口
-
-    - Url: http://{{host}}/img/imgs
-
-    - 参数
-
-      | key  | value |
-      | ---- | ----- |
-      | num  | 1     |
-
-    - 请求成功
-
-      ```json
-      {
-          "status": "success",
-          "data": [
-              "http://pull.wghtstudio.cn/img/2.jpg",
-              "http://pull.wghtstudio.cn/img/3.jpg",
-              "http://pull.wghtstudio.cn/img/4.jpg",
-              "http://pull.wghtstudio.cn/img/5.jpg",
-              "http://pull.wghtstudio.cn/img/6.jpg",
-              "http://pull.wghtstudio.cn/img/7.jpg"
-          ]
-      }
-      ```
+  ```json
+  {
+    "status": "success",
+    "data": [
+      "http://pull.wghtstudio.cn/img/2.jpg",
+      "http://pull.wghtstudio.cn/img/3.jpg",
+      "http://pull.wghtstudio.cn/img/4.jpg",
+      "http://pull.wghtstudio.cn/img/5.jpg",
+      "http://pull.wghtstudio.cn/img/6.jpg",
+      "http://pull.wghtstudio.cn/img/7.jpg"
+    ]
+  }
+  ```
