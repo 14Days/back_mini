@@ -1,110 +1,91 @@
 ## 接口文档
 
-- 注册接口
+### 注册接口
 
-  - 请求验证码接口
+#### 请求验证码
 
-    - Url：http://{{host}}/user/code
+- url：/user/code
 
-    - Method: get
+- method：GET
 
-    - 参数
+- args：
 
-      | key | value |
-      | ------ | ------ |
-      | phone | 13588213889 |
+  | key | value |
+  | ------ | ------ |
+  | phone | 13588213889 |
 
-    - 返回数据格式
+- response：
 
-      - 请求成功
+  ```json
+{
+    "status": "success",
+    "data": "短信发送成功"
+  }
+  
+  {
+    "status": "error",
+  "err_msg": "短信发送失败"
+  }
+```
 
-        ```json
-        {
-            "status": "success",
-            "data": "短信发送成功"
-        }
-        ```
+#### 注册接口
 
-      - 请求失败
+- url：/user/account
 
-        ```json
-        {
-            "status": "error",
-            "data": "短信发送失败"
-        }
-        ```
+- method：POST
 
-  - 发送验证码接口
+- args：
 
-    - Url：http://{{host}}/user/account
+  ```json
+  {
+  	"phone": "13588213889",
+  	"code": "6143",
+  	"password": "123456",
+  	"name": "Mike"
+  }
+  ```
 
-    - method: post
+- response：
 
-    - 参数（Json格式）
+  ```json
+{
+    "status": "success",
+    "data": "验证成功"
+  }
+  
+  {
+    "status": "error",
+  "err_msg": "验证码错误"
+  }
+```
 
-      ```json
-      {
-      	"phone": "13588213889",
-      	"code": "6143",
-      	"password": "123456",
-      	"name": "Mike"
-      }
-      ```
+### 登录接口
 
-    - 返回数据格式
+- url：/user/authorization
 
-      - 请求成功
+- method：POST
 
-        ```json
-        {
-            "status": "success",
-            "data": "验证成功"
-        }
-        ```
+- args：
 
-      - 请求失败
+  ```json
+  {
+    "name": "guyunkai",
+  	"password": "123456"
+  }
+  ```
 
-        ```json
-        {
-            "status": "error",
-            "data": "验证码错误"
-        }
-        ```
-        
+- response：
 
-- 登录接口
-
-  - Url: http://{{host}}/user/authorization
-
-  - method: post
-
-  - 参数（Json格式）
-
-    ```json
-    {
-    	"name": "guyunkai",
-    	"password": "123456"
-    }
-    ```
-
-  - 返回数据格式
-
-    - 请求成功
-
-      ```json
-      {
-          "status": "success",
-          "data": "headers.payloads.signiture"
-      }
-      ```
-
-    - 请求失败
-
-      ```json
-      {
-          "status": "error",
-          "err_msg": "登录失败"
-      }
-      ```
+  ```json
+{
+    "status": "success",
+    "data": "headers.payloads.signiture"
+  }
+  
+  {
+    "status": "error",
+  "err_msg": "登录失败"
+  }
+```
 
 
