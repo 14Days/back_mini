@@ -107,4 +107,75 @@
       }
       ```
 
+- 公告接口
 
+  - Url: http://{{host}}/notice
+
+  - Method: get
+
+  - 参数 （无）
+
+  - 返回数据格式
+
+    - 请求成功
+
+      ```json
+      {
+          "status": "success",
+          "data": "内容内容内容内容"
+      }
+      ```
+
+- 轮播图接口
+
+  - Url: http://{{host}}/img/cycle
+
+  - method: get
+
+  - 参数 （无）
+
+  - 返回数据格式
+
+    - 请求成功
+
+      ```json
+      {
+          "status": "success",
+          "data": [
+              "http://pull.wghtstudio.cn/img/1.jpg",
+              "http://pull.wghtstudio.cn/img/2.jpg",
+              "http://pull.wghtstudio.cn/img/3.jpg",
+              "http://pull.wghtstudio.cn/img/4.jpg",
+              "http://pull.wghtstudio.cn/img/5.jpg",
+              "http://pull.wghtstudio.cn/img/6.jpg"
+          ]
+      }
+      ```
+
+- 图片接口
+
+  - 请求图片接口
+
+    - Url: http://{{host}}/img/imgs
+
+    - 参数
+
+      | key  | value |
+      | ---- | ----- |
+      | num  | 1     |
+
+    - 请求成功
+
+      ```json
+      {
+          "status": "success",
+          "data": [
+              "http://pull.wghtstudio.cn/img/2.jpg",
+              "http://pull.wghtstudio.cn/img/3.jpg",
+              "http://pull.wghtstudio.cn/img/4.jpg",
+              "http://pull.wghtstudio.cn/img/5.jpg",
+              "http://pull.wghtstudio.cn/img/6.jpg",
+              "http://pull.wghtstudio.cn/img/7.jpg"
+          ]
+      }
+      ```

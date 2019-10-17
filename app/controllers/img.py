@@ -31,4 +31,9 @@ class ImgHandler(Base):
         return self.success_warp(data)
 
     #提交已经打标完成的图片
+    async def post_tabed_img(self, request:web.BaseRequest):
+        url = request.query.get('url')
+        #标记img表中对应图片为已打标
+
+        #
 
