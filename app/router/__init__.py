@@ -1,15 +1,11 @@
 from aiohttp import web
-from app.controllers.ping import Ping
 from app.controllers.user import UserHandler
 from app.controllers.notice import NoticeHandler
 from app.controllers.img import ImgHandler
+from app.controllers.tag import TagHandler
 
 
 def register_routes(app: web.Application):
-    ping_app = web.Application()
-    ping = Ping()
-    ping_app.router.add_get('', ping.hello)
-
     user_app = web.Application()
     user = UserHandler()
     user_app.router.add_get('/code', user.send_verify_code)
@@ -25,7 +21,11 @@ def register_routes(app: web.Application):
     img_app.router.add_get('/cycle', img.get_six_imgs)
     img_app.router.add_get('/imgs', img.get_untabed_imgs)
 
-    app.add_subapp('/ping', ping_app)
+    tag_app = web.Application()
+    tag = TagHandler()
+    tag_app.router.add_post('', tag.post_taged_img)
+
     app.add_subapp('/user', user_app)
     app.add_subapp('/notice', notice_app)
     app.add_subapp('/img', img_app)
+    app.add_subapp('/tag', tag_app)

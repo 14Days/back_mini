@@ -25,10 +25,23 @@ class Imgs:
             logger.error('Failed to select six imges from database')
 
     @classmethod
-    async def return_untabed_imgs(cls, num: int) -> list:
+    async def return_untaged_imgs(cls, num: int) -> list:
         try:
             async with engine.engine.acquire() as conn:
-                res = await conn.execute(cls.imgs.select().where(cls.imgs.c.is_tabed == False))
+                res = await conn.execute(cls.imgs.select().where(cls.imgs.c.is_tabed == 0))
                 return await res.fetchmany(num)
         except Error as e:
             logger.error('Failed to select imgs from database')
+
+    @classmethod
+    async def change_istaged(cls, img_id: int):
+        try:
+            async with engine.engine.acquire() as conn:
+                task = await conn.begin()
+                await conn.execute(cls.imgs.update().where(cls.imgs.c.id == img_id).values(is_tabed=1))
+                await task.commit()
+        except Error as e:
+            logger.error('Failed to change tag in database')
+
+
+
