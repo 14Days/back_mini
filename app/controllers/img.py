@@ -1,6 +1,6 @@
 from .base import Base
 from aiohttp import web
-from models.imgs import Imgs
+from app.models.imgs import Imgs
 
 
 class ImgHandler(Base):

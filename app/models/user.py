@@ -69,3 +69,14 @@ class User:
         except Error as e:
             logger.error('Failed to confirm password from database')
             raise
+
+    @classmethod
+    async def get_user_id(cls, name: str) -> int:
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(cls.user.select().where(cls.user.c.username == name))
+                temp = await res.fetchone()
+                return temp[0]
+        except Error as e:
+            logger.error('Failed to get user_id from database')
+            raise

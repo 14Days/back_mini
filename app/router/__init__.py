@@ -4,6 +4,7 @@ from app.controllers.notice import NoticeHandler
 from app.controllers.img import ImgHandler
 from app.controllers.tag import TagHandler
 from app.middlewares.jwt import jwt_middleware
+from app.controllers.record import RecordHandler
 
 
 def register_routes(app: web.Application):
@@ -29,7 +30,13 @@ def register_routes(app: web.Application):
     tag_app.middlewares.append(jwt_middleware)
     tag_app.router.add_post('', tag.post_taged_img)
 
+    record_app = web.Application()
+    record = RecordHandler()
+    record_app.middlewares.append(jwt_middleware)
+    record_app.router.add_get('/day', record.get_work_today)
+
     app.add_subapp('/user', user_app)
     app.add_subapp('/notice', notice_app)
     app.add_subapp('/img', img_app)
     app.add_subapp('/tag', tag_app)
+    app.add_subapp('/record', record_app)
