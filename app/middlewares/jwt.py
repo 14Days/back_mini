@@ -11,7 +11,11 @@ logger = logging.getLogger('main.jwt')
 @web.middleware
 async def jwt_middleware(request: web.BaseRequest, handler):
     headers = request.headers
-    token = bytes(headers['token'], encoding='utf-8')
+    try:
+        token = bytes(headers['token'], encoding='utf-8')
+    except KeyError as e:
+        logger.error('Failed to get token')
+        return Base.fail_warp('参数错误')
 
     try:
         jwt = await parse_token(token)

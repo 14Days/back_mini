@@ -2,12 +2,17 @@ from aiohttp import web
 from .base import Base
 from models.imgs import Imgs
 from models.imgs_tag import ImgsTag
+from utils.token import parse_token
 
 
 class TagHandler(Base):
     # 提交已经打标完成的图片
     async def post_taged_img(self, request: web.BaseRequest):
         data = await request.json()
+        headers = request.headers
+        token = bytes(headers['token'], encoding='utf-8')
+        jwt = await parse_token(token)
+        name = jwt['name']
         if data is None:
             return self.fail_warp('参数不能为空')
         img_id = data.get('img_id')
