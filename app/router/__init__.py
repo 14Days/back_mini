@@ -33,7 +33,7 @@ def register_routes(app: web.Application):
     record_app = web.Application()
     record = RecordHandler()
     record_app.middlewares.append(jwt_middleware)
-    record_app.router.add_get('/day', record.get_work_record)
+    record_app.router.add_get('/count', record.get_work_record)
 
     app.add_subapp('/user', user_app)
     app.add_subapp('/notice', notice_app)

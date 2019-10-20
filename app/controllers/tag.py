@@ -2,6 +2,7 @@ from aiohttp import web
 from .base import Base
 from app.models.imgs import Imgs
 from app.models.imgs_tag import ImgsTag
+from app.models.record import Record
 
 
 class TagHandler(Base):
@@ -20,8 +21,8 @@ class TagHandler(Base):
             await Imgs.change_istaged(img_id)
             # 为提交的图片添加标签
             await ImgsTag.add_tag(img_id, tag_id)
-            # 用户日打标数加一，周打标数加一
-
+            # 用户日打标数加一
+            await Record.add_day_record(name)
             return self.success_warp('图片提交完成')
         except BaseException:
             return self.fail_warp('提交失败')
