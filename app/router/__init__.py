@@ -3,6 +3,7 @@ from app.controllers.user import UserHandler
 from app.controllers.notice import NoticeHandler
 from app.controllers.img import ImgHandler
 from app.controllers.tag import TagHandler
+from app.middlewares.jwt import jwt_middleware
 
 
 def register_routes(app: web.Application):
@@ -14,10 +15,12 @@ def register_routes(app: web.Application):
 
     notice_app = web.Application()
     notice = NoticeHandler()
+    notice_app.middlewares.append(jwt_middleware)
     notice_app.router.add_get('', notice.get_notice)
 
     img_app = web.Application()
     img = ImgHandler()
+    img_app.middlewares.append(jwt_middleware)
     img_app.router.add_get('/cycle', img.get_six_imgs)
     img_app.router.add_get('/imgs', img.get_untabed_imgs)
 

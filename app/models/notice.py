@@ -25,3 +25,4 @@ class Notice:
                 return await res.fetchone()
         except Error as e:
             logger.error('Failed to select notice from database')
+            raise

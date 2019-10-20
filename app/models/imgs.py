@@ -23,6 +23,7 @@ class Imgs:
                 return await res.fetchmany(6)
         except Error as e:
             logger.error('Failed to select six imges from database')
+            raise
 
     @classmethod
     async def return_untaged_imgs(cls, num: int) -> list:
@@ -32,6 +33,7 @@ class Imgs:
                 return await res.fetchmany(num)
         except Error as e:
             logger.error('Failed to select imgs from database')
+            raise
 
     @classmethod
     async def change_istaged(cls, img_id: int):
@@ -42,6 +44,7 @@ class Imgs:
                 await task.commit()
         except Error as e:
             logger.error('Failed to change tag in database')
+            raise
 
 
 

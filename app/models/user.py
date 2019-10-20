@@ -28,6 +28,7 @@ class User:
                     return False
         except Error as e:
             logger.error('Failed to select data from database')
+            raise
 
     @classmethod
     async def check_user(cls, name):
@@ -40,6 +41,7 @@ class User:
                     return False
         except Error as e:
             logger.error('Failed to select data from database')
+            raise
 
     @classmethod
     async def add_user(cls, name, password, phone):
@@ -50,6 +52,7 @@ class User:
                 await task.commit()
         except Error as e:
             logger.error('Failed to insert data to database')
+            raise
 
     @classmethod
     async def check_password(cls, name, password):
@@ -65,3 +68,4 @@ class User:
                     return True
         except Error as e:
             logger.error('Failed to confirm password from database')
+            raise
