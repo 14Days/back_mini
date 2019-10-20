@@ -76,7 +76,7 @@ class UserHandler(Base):
                     await set_name_in_redis(name, token)
                 except BaseException as e:
                     return self.fail_warp('Redis存储失败')
-                return self.success_warp(str(token))
+                return self.success_warp(str(token, encoding='utf-8'))
             else:
                 return self.fail_warp('登录失败')
         except BaseException as e:

@@ -26,6 +26,7 @@ def register_routes(app: web.Application):
 
     tag_app = web.Application()
     tag = TagHandler()
+    tag_app.middlewares.append(jwt_middleware)
     tag_app.router.add_post('', tag.post_taged_img)
 
     app.add_subapp('/user', user_app)
