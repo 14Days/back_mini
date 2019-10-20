@@ -24,6 +24,8 @@ def register_routes(app: web.Application):
     img_app.middlewares.append(jwt_middleware)
     img_app.router.add_get('/cycle', img.get_six_imgs)
     img_app.router.add_get('/imgs', img.get_untabed_imgs)
+    img_app.router.add_post('/unknown', img.post_unknown_imgs)
+    img_app.router.add_get('/unknown', img.get_unknown_imgs)
 
     tag_app = web.Application()
     tag = TagHandler()

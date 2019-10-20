@@ -1,6 +1,8 @@
 from .base import Base
 from aiohttp import web
 from app.models.imgs import Imgs
+from app.models.user_imgs import UserImgs
+from aiomysql import Error
 
 
 class ImgHandler(Base):
@@ -37,4 +39,16 @@ class ImgHandler(Base):
         except BaseException as e:
             return self.fail_warp("请求图片失败")
 
+    async def post_unknown_imgs(self, request: web.BaseRequest):
+        try:
+            data = await request.json()
+            img_id = data['img_id']
+            name = request['name']
+            await Imgs.change_iskonwn(img_id)
+            await UserImgs.add_unknown_img(name, img_id)
+            return self.success_warp('请求成功')
+        except BaseException:
+            return self.fail_warp('添加搁置图片失败')
 
+    async def get_unknown_imgs(self, request: web.BaseRequest):
+        pass

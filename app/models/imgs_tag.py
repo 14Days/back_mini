@@ -1,6 +1,5 @@
 import sqlalchemy as sa
 import logging
-from pymysql.err import IntegrityError
 
 from sqlalchemy import ForeignKey
 
