@@ -28,15 +28,22 @@ class Record:
     #     finally:
 
     @classmethod
-    async def get_work_today(cls, name: int) -> int:
+    async def get_work_today(cls, name: str) -> dict:
         async with engine.engine.acquire() as conn:
             try:
                 date = datetime.date.today()
                 user_id = await User.get_user_id(name)
-                res = await conn.execute(cls.record.select().where(cls.record.c.day == date).where(cls.record.c.user_id == user_id))
+                res = await conn.execute(
+                    cls.record.select().where(cls.record.c.day == date).where(cls.record.c.user_id == user_id))
                 temp = await res.fetchone()
-                return temp[3]
-            except BaseException as e:
-                logger.error('Failed to get day from record')
-                raise
+                res1 = await conn.execute(
+                    'select sum(count) from record where day between (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)) and (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY))')
+                temp1 = await res1.fetchone()
 
+                return {
+                    'day': temp[3],
+                    'week': str(temp1[0])
+                }
+            except BaseException:
+                logger.error('Failed to get data from record')
+                raise
