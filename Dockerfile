@@ -6,4 +6,4 @@ ADD . /app
 
 RUN pip install -r requirements.txt -i https://pypi.tuna.tsinghua.edu.cn/simple
 
-CMD ["gunicorn", "main:app", "-c", "gunicorn.conf.py"]
+CMD ["gunicorn", "main:init_app", "-c", "gunicorn.conf.py"]
