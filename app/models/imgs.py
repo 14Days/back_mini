@@ -12,7 +12,7 @@ class Imgs:
         'imgs', metadata,
         sa.Column('id', sa.INT, autoincrement=True, primary_key=True),
         sa.Column('img_url', sa.VARCHAR(255)),
-        sa.Column('is_tabed', sa.Boolean, default=False)
+        sa.Column('is_tabed', sa.Integer, default=False)
     )
 
     @classmethod
@@ -44,6 +44,28 @@ class Imgs:
                 await task.commit()
         except Error as e:
             logger.error('Failed to change tag in database')
+            raise
+
+    @classmethod
+    async def change_iskonwn(cls, img_id: int):
+        try:
+            async with engine.engine.acquire() as conn:
+                task = await conn.begin()
+                await conn.execute(cls.imgs.update().where(cls.imgs.c.id == img_id).values(is_tabed=2))
+                await task.commit()
+        except Error as e:
+            logger.error('Failed to change isknown in database')
+            raise
+
+    @classmethod
+    async def get_img_url(cls, img_id: int) -> str:
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(cls.imgs.select().where(cls.imgs.c.id == img_id))
+                temp = await res.fetchone()
+                return temp[1]
+        except Error as e:
+            logger.error(e)
             raise
 
 
