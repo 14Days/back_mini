@@ -57,5 +57,16 @@ class Imgs:
             logger.error('Failed to change isknown in database')
             raise
 
+    @classmethod
+    async def get_img_url(cls, img_id: int) -> str:
+        try:
+            async with engine.engine.acquire() as conn:
+                res = await conn.execute(cls.imgs.select().where(cls.imgs.c.id == img_id))
+                temp = await res.fetchone()
+                return temp[1]
+        except Error as e:
+            logger.error(e)
+            raise
+
 
 
