@@ -104,7 +104,13 @@
 
 - method：GET
 
-- args：none
+- args：headers
+
+  | key   | value       |
+  | ----- | ----------- |
+  | token | token value |
+
+  
 
 - response：
 
@@ -121,7 +127,7 @@
 
 - method：GET
 
-- args：none
+- args：headers
 
 - response：
 
@@ -138,6 +144,17 @@
     ]
   }
   ```
+  
+  ```json
+  {
+      "status": "error",
+      "err_msg": "jwt已过期,请重新登录"
+  }
+  ```
+  
+  
+
+
 
 ### 图片接口
 
@@ -151,7 +168,7 @@
   | ---- | ----- |
   | num  | 1     |
 
-- 请求成功
+- response
 
   ```json
   {
@@ -177,9 +194,27 @@
 
   ```json
   {
-    "img_id": 1,
-    "tag": ["可爱的", "北欧风格", "餐厅", "紫色"]
+    "img_id": 7,
+    "tag": [1, 2]
   }
   ```
 
-  
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": "图片提交完成"
+  }
+  ```
+
+  ```json
+  {
+      "status": "error",
+      "err_msg": "提交失败"
+  }
+  ```
+
+### 统计数据接口
+
+- URL: /record/count
