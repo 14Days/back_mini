@@ -98,7 +98,7 @@
   ```
 
 
-### 公告接口
+### 公告
 
 - URL：/notice
 
@@ -121,7 +121,7 @@
   }
   ```
 
-### 轮播图接口
+### 轮播图
 
 - URL：/img/cycle
 
@@ -156,7 +156,7 @@
 
 
 
-### 图片接口
+### 图片
 
 - URL：/img/imgs
 
@@ -184,7 +184,7 @@
   }
   ```
 
-### 标签接口
+### 标签
 
 - URL: /tag
 
@@ -215,6 +215,87 @@
   }
   ```
 
-### 统计数据接口
+### 统计数据
 
 - URL: /record/count
+
+- method: Get
+
+- args: headers
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": {
+          "day": "0",
+          "week": "5"
+      }
+  }
+  ```
+
+### 搁置图片
+
+#### 提交搁置图片
+
+- URL: /img/unknown
+
+- method: Post
+
+- args:
+
+  ```json
+  {
+  	"img_id": 2
+  }
+  ```
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": "请求成功"
+  }
+  ```
+
+  ```json
+  {
+      "status": "error",
+      "err_msg": "添加搁置图片失败"
+  }
+  ```
+
+#### 请求搁置图片
+
+- URL: /img/unknown
+
+- method: Get
+
+- args:
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": [
+          {
+              "img_id": 1,
+              "img_url": "http://pull.wghtstudio.cn/img/1.jpg"
+          },
+          {
+              "img_id": 2,
+              "img_url": "http://pull.wghtstudio.cn/img/2.jpg"
+          },
+          {
+              "img_id": 4,
+              "img_url": "http://pull.wghtstudio.cn/img/4.jpg"
+          }
+      ]
+  }
+  ```
+
+  
+
