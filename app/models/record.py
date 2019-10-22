@@ -29,17 +29,28 @@ class Record:
                 temp = await res.fetchone()
 
                 res1 = await conn.execute(
-                    'select sum(count) from record where day between (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)) and (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY))')
+                    'select sum(count) from record where user_id = %s and day between (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)) and (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY))', user_id)
                 temp1 = await res1.fetchone()
 
-                if temp is None:
+
+                if temp is None and temp1[0] is None:
+                    return {
+                        'day': "0",
+                        'week': "0"
+                    }
+                elif temp is None:
                     return {
                         'day': "0",
                         'week': str(temp1[0])
                     }
+                elif temp1[0] is None:
+                    return {
+                        'day': str(temp[3]),
+                        'week': "0"
+                    }
                 else:
                     return {
-                        'day': temp[3],
+                        'day': str(temp[3]),
                         'week': str(temp1[0])
                     }
             except BaseException:
