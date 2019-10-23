@@ -14,7 +14,7 @@ def create_token(name: str) -> bytes:
     return jwt.encode(payload, key, 'HS256')
 
 
-async def parse_token(token: bytes) -> dict:
+def parse_token(token: bytes) -> dict:
     return jwt.decode(token, key, 'HS256')
 
 
