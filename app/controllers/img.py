@@ -28,9 +28,12 @@ class ImgHandler(Base):
             num = request.query.get('num')
             res = await Imgs.return_untaged_imgs(int(num))
             print(res)
-            data = {}
+            data = []
             for item in res:
-                data[item[0]] = item[1]
+                data.append({
+                    'img_id': item[0],
+                    'img_url': item[1]
+                })
 
             if data is None:
                 return self.fail_warp('请求图片失败')
