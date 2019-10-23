@@ -98,13 +98,19 @@
   ```
 
 
-### 公告接口
+### 公告
 
 - URL：/notice
 
 - method：GET
 
-- args：none
+- args：headers
+
+  | key   | value       |
+  | ----- | ----------- |
+  | token | token value |
+
+  
 
 - response：
 
@@ -115,13 +121,13 @@
   }
   ```
 
-### 轮播图接口
+### 轮播图
 
 - URL：/img/cycle
 
 - method：GET
 
-- args：none
+- args：headers
 
 - response：
 
@@ -138,8 +144,19 @@
     ]
   }
   ```
+  
+  ```json
+  {
+      "status": "error",
+      "err_msg": "jwt已过期,请重新登录"
+  }
+  ```
+  
+  
 
-### 图片接口
+
+
+### 图片
 
 - URL：/img/imgs
 
@@ -151,7 +168,7 @@
   | ---- | ----- |
   | num  | 1     |
 
-- 请求成功
+- response
 
   ```json
   {
@@ -167,7 +184,7 @@
   }
   ```
 
-### 标签接口
+### 标签
 
 - URL: /tag
 
@@ -177,9 +194,108 @@
 
   ```json
   {
-    "img_id": 1,
-    "tag": ["可爱的", "北欧风格", "餐厅", "紫色"]
+    "img_id": 7,
+    "tag": [1, 2]
+  }
+  ```
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": "图片提交完成"
+  }
+  ```
+
+  ```json
+  {
+      "status": "error",
+      "err_msg": "提交失败"
+  }
+  ```
+
+### 统计数据
+
+- URL: /record/count
+
+- method: Get
+
+- args: headers
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": {
+          "day": "0",
+          "week": "5"
+      }
+  }
+  ```
+
+### 搁置图片
+
+#### 提交搁置图片
+
+- URL: /img/unknown
+
+- method: Post
+
+- args:
+
+  ```json
+  {
+  	"img_id": 2
+  }
+  ```
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": "请求成功"
+  }
+  ```
+
+  ```json
+  {
+      "status": "error",
+      "err_msg": "添加搁置图片失败"
+  }
+  ```
+
+#### 请求搁置图片
+
+- URL: /img/unknown
+
+- method: Get
+
+- args:
+
+- response
+
+  ```json
+  {
+      "status": "success",
+      "data": [
+          {
+              "img_id": 1,
+              "img_url": "http://pull.wghtstudio.cn/img/1.jpg"
+          },
+          {
+              "img_id": 2,
+              "img_url": "http://pull.wghtstudio.cn/img/2.jpg"
+          },
+          {
+              "img_id": 4,
+              "img_url": "http://pull.wghtstudio.cn/img/4.jpg"
+          }
+      ]
   }
   ```
 
   
+

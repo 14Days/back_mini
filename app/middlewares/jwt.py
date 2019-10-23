@@ -19,7 +19,7 @@ async def jwt_middleware(request: web.BaseRequest, handler):
         return Base.fail_warp('参数错误')
 
     try:
-        jwt = await parse_token(token)
+        jwt = parse_token(token)
     except ExpiredSignatureError:
         logger.error('JWT has expired')
         return Base.fail_warp('jwt已过期,请重新登录')
