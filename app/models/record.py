@@ -69,7 +69,9 @@ class Record:
                 temp = await res.fetchone()
 
                 if temp is None:
+                    task = await conn.begin()
                     await conn.execute(cls.record.insert().values(user_id=user_id, day=date, count=1))
+                    await task.commit()
                 else:
                     count = temp[3] + 1
                     task = await conn.begin()

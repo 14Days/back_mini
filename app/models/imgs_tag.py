@@ -20,6 +20,7 @@ class ImgsTag:
     async def add_tag(cls, img_id: int, tag_id: list):
         try:
             async with engine.engine.acquire() as conn:
+
                 task = await conn.begin()
                 for tag in tag_id:
                     await conn.execute(cls.imgs_tag.insert().values({
@@ -30,5 +31,3 @@ class ImgsTag:
         except BaseException as e:
             logger.error('Failed to add tag to database')
             raise
-
-
