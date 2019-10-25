@@ -28,9 +28,12 @@ class ImgHandler(Base):
             num = request.query.get('num')
             res = await Imgs.return_untaged_imgs(int(num))
             print(res)
-            data = {}
+            data = []
             for item in res:
-                data[item[0]] = item[1]
+                data.append({
+                    'img_id': item[0],
+                    'img_url': item[1]
+                })
 
             if data is None:
                 return self.fail_warp('请求图片失败')
@@ -44,8 +47,7 @@ class ImgHandler(Base):
             data = await request.json()
             img_id = data['img_id']
             name = request['name']
-            await Imgs.change_iskonwn(img_id)
-            await UserImgs.add_unknown_img(name, img_id)
+            await Imgs.change_iskonwn(img_id, name)
             return self.success_warp('请求成功')
         except BaseException:
             return self.fail_warp('添加搁置图片失败')
