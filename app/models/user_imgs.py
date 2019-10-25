@@ -2,7 +2,6 @@ import sqlalchemy as sa
 import logging
 from app.models import engine
 from app.models.user import User
-from app.models.imgs import Imgs
 
 metadata = sa.MetaData()
 logger = logging.getLogger('models.user_imgs')
@@ -16,26 +15,6 @@ class UserImgs:
     )
 
     @classmethod
-    async def add_unknown_img(cls, name: str, img_id: int):
-        user_id = await User.get_user_id(name)
-        try:
-            async with engine.engine.acquire() as conn:
-                task = await conn.begin()
-                print(cls.user_imgs.insert().values({
-                    'img_id': img_id,
-                    'user_id': user_id
-                }))
-
-                await conn.execute(cls.user_imgs.insert().values({
-                    'img_id': img_id,
-                    'user_id': user_id
-                }))
-                await task.commit()
-        except BaseException as e:
-            logger.error(e)
-            raise
-
-    @classmethod
     async def get_unknown_img(cls, name: str) -> list:
         user_id = await User.get_user_id(name)
         try:
@@ -43,6 +22,7 @@ class UserImgs:
                 res = await conn.execute(cls.user_imgs.select().where(cls.user_imgs.c.user_id == user_id))
                 temps = await res.fetchall()
                 imgs = []
+                from app.models.imgs import Imgs
                 for temp in temps:
                     img_url = await Imgs.get_img_url(temp[1])
                     imgs.append({

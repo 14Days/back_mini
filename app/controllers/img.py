@@ -47,8 +47,7 @@ class ImgHandler(Base):
             data = await request.json()
             img_id = data['img_id']
             name = request['name']
-            await Imgs.change_iskonwn(img_id)
-            await UserImgs.add_unknown_img(name, img_id)
+            await Imgs.change_iskonwn(img_id, name)
             return self.success_warp('请求成功')
         except BaseException:
             return self.fail_warp('添加搁置图片失败')

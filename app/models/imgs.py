@@ -6,6 +6,7 @@ from app.models.imgs_tag import ImgsTag
 from app.models.user import User
 from app.models.record import Record
 from aiomysql.sa import Error
+from app.models.user_imgs import UserImgs
 
 logger = logging.getLogger('main.imgs')
 metadata = sa.MetaData()
@@ -72,11 +73,16 @@ class Imgs:
             raise
 
     @classmethod
-    async def change_iskonwn(cls, img_id: int):
+    async def change_iskonwn(cls, img_id: int, name: str):
+        user_id = await User.get_user_id(name)
         try:
             async with engine.engine.acquire() as conn:
                 task = await conn.begin()
                 await conn.execute(cls.imgs.update().where(cls.imgs.c.id == img_id).values(is_tabed=2))
+                await conn.execute(UserImgs.user_imgs.insert().values({
+                    'img_id': img_id,
+                    'user_id': user_id
+                }))
                 await task.commit()
         except Error as e:
             logger.error('Failed to change isknown in database', e)
