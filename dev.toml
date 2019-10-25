@@ -5,7 +5,6 @@ mode = 'dev'
     format = '%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s'
 
 [database]
-pool = 4
 user = 'root'
 password = '613fb94fbd740f66'
 host = 'wghtstudio.cn'
