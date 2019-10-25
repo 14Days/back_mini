@@ -57,27 +57,4 @@ class Record:
                 logger.error('Failed to get data from record')
                 raise
 
-    @classmethod
-    async def add_day_record(cls, name: str):
-        async with engine.engine.acquire() as conn:
-            try:
-                date = datetime.date.today()
-                user_id = await User.get_user_id(name)
 
-                res = await conn.execute(
-                    cls.record.select().where(cls.record.c.day == date).where(cls.record.c.user_id == user_id))
-                temp = await res.fetchone()
-
-                if temp is None:
-                    task = await conn.begin()
-                    await conn.execute(cls.record.insert().values(user_id=user_id, day=date, count=1))
-                    await task.commit()
-                else:
-                    count = temp[3] + 1
-                    task = await conn.begin()
-                    await conn.execute(cls.record.update().where(cls.record.c.user_id == user_id).where(
-                        cls.record.c.day == date).values(count=count))
-                    await task.commit()
-            except BaseException:
-                logger.error('Failed to refresh record to database')
-                raise

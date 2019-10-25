@@ -16,18 +16,3 @@ class ImgsTag:
         sa.Column('tag_id', sa.INT, ForeignKey('SecondLevel.id'))
     )
 
-    @classmethod
-    async def add_tag(cls, img_id: int, tag_id: list):
-        try:
-            async with engine.engine.acquire() as conn:
-
-                task = await conn.begin()
-                for tag in tag_id:
-                    await conn.execute(cls.imgs_tag.insert().values({
-                        "img_id": img_id,
-                        "tag_id": tag,
-                    }))
-                await task.commit()
-        except BaseException as e:
-            logger.error('Failed to add tag to database')
-            raise

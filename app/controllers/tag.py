@@ -3,7 +3,7 @@ from .base import Base
 from app.models.imgs import Imgs
 from app.models.imgs_tag import ImgsTag
 from app.models.record import Record
-
+from app.models import engine
 
 class TagHandler(Base):
     # 提交已经打标完成的图片
@@ -18,11 +18,8 @@ class TagHandler(Base):
 
         try:
             # 标记img表中对应图片为已打标
-            await Imgs.change_istaged(img_id)
-            # 为提交的图片添加标签
-            await ImgsTag.add_tag(img_id, tag_id)
-            # 用户日打标数加一
-            await Record.add_day_record(name)
+            await Imgs.change_istaged(img_id, tag_id, name)
             return self.success_warp('图片提交完成')
-        except BaseException:
+        except BaseException as e:
+            print(e)
             return self.fail_warp('提交失败')
