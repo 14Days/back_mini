@@ -54,3 +54,16 @@ class UserImgs:
         except BaseException as e:
             logger.error(e)
             raise
+
+    @classmethod
+    async def delete_unknown_img(cls, name: str, img_id: int):
+        user_id = await User.get_user_id(name)
+        try:
+            async with engine.engine.acquire() as conn:
+                task = await conn.begin()
+                await conn.execute(cls.user_imgs.delete().where(cls.user_imgs.c.user_id == user_id).where(
+                    cls.user_imgs.c.img_id == img_id))
+                await task.commit()
+        except BaseException as e:
+            logger.error(e)
+            raise
