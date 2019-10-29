@@ -1,15 +1,15 @@
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
 import logging
 
 logger = logging.getLogger('main')
 
 
-def create_base_log(config):
-    if config['mode'] == 'dev':
-        logger.setLevel(level=logging.INFO)
-    else:
-        logger.setLevel(level=logging.ERROR)
+def create_base_log():
+    logger.setLevel(level=logging.INFO)
 
-    formatter = logging.Formatter(config['log']['format'])
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
     handler = logging.StreamHandler()
     handler.setFormatter(formatter)
 
