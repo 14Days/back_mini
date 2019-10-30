@@ -10,13 +10,6 @@ img_tag = db.Table(
     db.Column('tag_id', db.Integer, db.ForeignKey('second_level.id'), primary_key=True)
 )
 
-# 用户图片表
-user_img = db.Table(
-    'user_imgs',
-    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
-    db.Column('img_id', db.Integer, db.ForeignKey('imgs.id'), primary_key=True)
-)
-
 
 # 用户表
 class User(db.Model):
@@ -26,8 +19,7 @@ class User(db.Model):
     open_id = db.Column(db.String(255), nullable=False)
     phone = db.Column(db.String(11), nullable=False)
     total_tag = db.relationship('Record', backref='user', lazy=True)
-    images = db.relationship('Img', secondary=user_img, lazy='subquery',
-                             backref=db.backref('images', lazy=True))
+    images = db.relationship('Img', backref='user', lazy=True)
 
 
 # 通知表
@@ -62,8 +54,9 @@ class Img(db.Model):
     __tablename__ = 'imgs'
 
     id = db.Column(db.Integer, autoincrement=True, primary_key=True)
-    img_url = db.Column(db.String(255))
-    is_tabed = db.Column(db.Integer, default=False)
+    img_url = db.Column(db.String(255), nullable=False)
+    status = db.Column(db.Integer, default=0, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=True)
     tags = db.relationship('SecondLevel', secondary=img_tag, lazy='subquery',
                            backref=db.backref('tags', lazy=True))
 
