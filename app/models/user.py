@@ -17,3 +17,14 @@ def add_user(username: str, password: str, phone: str):
     user = User(username=username, password=password, open_id=1, phone=phone)
     db.session.add(user)
     session_commit()
+
+
+def user_login(username: str, password: str):
+    temp_username = User.query.filter_by(username=username).filter_by(password=password).first()
+    temp_phone = User.query.filter_by(phone=username).filter_by(password=password).first()
+    if temp_username is not None:
+        return temp_username
+    elif temp_phone is not None:
+        return temp_phone
+    else:
+        return None

@@ -6,12 +6,13 @@ from sqlalchemy.exc import SQLAlchemyError
 from redis.exceptions import RedisError
 from requests.exceptions import RequestException
 from app.utils.warpper import success_warp, fail_warp
-from app.models.user import check_phone, check_user, add_user
+from app.models.user import check_phone, check_user, add_user, user_login
 from app.utils.message import \
     create_verify_code, \
     set_code_in_redis, \
     send_message, \
     get_code_in_redis
+from app.utils.token import create_token, set_name_in_redis
 
 user_page = Blueprint('user', __name__, url_prefix='/user')
 
@@ -30,11 +31,11 @@ def send_verify_code():
         set_code_in_redis(phone, code)
         send_message(phone, code)
         return success_warp('发送成功')
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         return fail_warp('数据库操作失败')
-    except RedisError as e:
+    except RedisError:
         return fail_warp('redis操作失败')
-    except RequestException as e:
+    except RequestException:
         return fail_warp('验证码发送失败')
 
 
@@ -58,9 +59,33 @@ def register_account():
             return success_warp('注册成功')
         else:
             return fail_warp('验证码错误')
-    except SQLAlchemyError as e:
+    except SQLAlchemyError:
         return fail_warp('数据库操作失败')
-    except RedisError as e:
+    except RedisError:
         return fail_warp('redis操作失败')
-    except RuntimeError as e:
+    except RuntimeError:
         return fail_warp('验证码过期')
+
+
+@user_page.route('/authorization', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('name')
+    password = data.get('password')
+
+    if username is None or password is None or \
+            username == '' or password == '':
+        return fail_warp('参数错误')
+
+    try:
+        temp = user_login(username, password)
+        if temp is not None:
+            token = create_token(temp.username)
+            set_name_in_redis(temp.username, token)
+            return success_warp(str(token, encoding='utf-8'))
+        else:
+            return fail_warp('登陆失败')
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')
+    except RedisError:
+        return fail_warp('token保存错误')
