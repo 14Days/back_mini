@@ -17,7 +17,7 @@ def get_tag_item():
 def untag_img(num: int, username: str):
     user = User.query.filter_by(username=username).first()
     images = Img.query. \
-        filter(or_(and_(Img.user_id.isnot(None), Img.status == 0), Img.user_id.is_(None))).limit(num).all()
+        filter(or_(and_(Img.user_id == user.id, Img.status == 0), Img.user_id.is_(None))).limit(num).all()
 
     for image in images:
         image.user_id = user.id

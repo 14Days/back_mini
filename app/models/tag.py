@@ -3,20 +3,19 @@ __author__ = 'Abbott'
 
 import datetime
 from app.models import session_commit, db
-from app.models.models import User, Img, img_tag, Record
+from app.models.models import User, Img, Record, SecondLevel
 
 
 def tag_it(img_id: int, tag: list, username: str):
     # 图片打标
+    temp_tag = []
     for item in tag:
-        img_tag.insert().values({
-            "img_id": img_id,
-            "tag_id": item,
-        })
+        temp_tag.append(SecondLevel.query.filter_by(id=item).first())
 
     # 图片标记为已操作
     image = Img.query.filter_by(id=img_id).first()
     image.status = 1
+    image.tags = temp_tag
 
     # 用户记录加一
     user = User.query.filter_by(username=username).first()
