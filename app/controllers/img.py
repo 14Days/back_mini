@@ -54,7 +54,10 @@ def get_untabed_imgs():
         images = untag_img(num, username)
         data = []
         for image in images:
-            data.append(image.img_url)
+            data.append({
+                'id': image.id,
+                'url': image.img_url
+            })
         return success_warp(data)
     except SQLAlchemyError:
         return fail_warp('数据库操作错误')
@@ -67,7 +70,10 @@ def get_unknown():
         images = get_unknown_img(username)
         data = []
         for image in images:
-            data.append(image.img_url)
+            data.append({
+                'id': image.id,
+                'url': image.img_url
+            })
         return success_warp(data)
     except SQLAlchemyError:
         return fail_warp('数据库操作错误')
