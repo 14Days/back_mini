@@ -1,8 +1,12 @@
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
 import random
-import json
-import aiohttp
 import logging
-from app.utils.redis import redis
+import requests
+from requests.exceptions import RequestException
+from redis.exceptions import RedisError
+from app.utils.redis import engine
 
 logger = logging.getLogger('main.message')
 
@@ -15,40 +19,39 @@ def create_verify_code() -> str:
     return code
 
 
-async def set_code_in_redis(phone_number: str, code: str):
+def set_code_in_redis(phone: str, code: str):
     try:
-        await redis.redis.set(phone_number, code)
-        await redis.redis.expire(phone_number, 5 * 60)
+        engine.engine.set(phone, code)
+        engine.engine.expire(phone, 5 * 60)
         logger.info('Set code in redis successfully')
-    except IOError as e:
-        logger.error('Failed to set data to redis')
+    except RedisError as e:
+        logger.error('Failed to set data to redis', e)
+        raise e
 
 
-async def get_code_in_redis(phone_number: str) -> str:
+def get_code_in_redis(phone: str) -> str:
     try:
-        return await redis.redis.get(phone_number)
-    except IOError as e:
-        logger.error('Failed to get data from redis')
+        temp = engine.engine.get(phone)
+        if temp is not None:
+            return temp.decode('utf-8')
+        else:
+            raise RuntimeError('验证码过期')
+    except RedisError as e:
+        logger.error('Failed to get data from redis', e)
+        raise e
 
 
-async def send_message(phone_number: str, code: str) -> bool:
-    async with aiohttp.ClientSession() as session:
-        try:
-            async with session.post('http://sms_developer.zhenzikj.com/sms/send.do', data={
-                'appId': '102760',
-                'appSecret': 'bb85649d-bd4a-4f48-9c0e-57e4d7c30855',
-                'message': '欢迎注册家居设计小程序，您的注册验证码为:{0}'.format(code),
-                'number': phone_number
-            }) as response:
-                result = await response.text()
-                logger.info('Get response successfully')
-        except ConnectionError as e:
-            logger.error('Failed to get response from zhen zi')
-        try:
-            result = json.loads(result)
-            if result['code'] == 0:
-                return True
-            else:
-                return False
-        except ValueError as e:
-            logger.error('Failed to parse json data')
+def send_message(phone: str, code: str) -> bool:
+    try:
+        r = requests.post('http://sms_developer.zhenzikj.com/sms/send.do', data={
+            'appId': '102760',
+            'appSecret': 'bb85649d-bd4a-4f48-9c0e-57e4d7c30855',
+            'message': '欢迎注册家居设计小程序，您的注册验证码为:{0}（有效时间5分钟）'.format(code),
+            'number': phone
+        })
+        response = r.json()
+        if response['code'] != 0:
+            raise RequestException()
+    except RequestException as e:
+        logger.error('Failed to send code', e)
+        raise e

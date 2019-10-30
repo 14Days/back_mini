@@ -1,83 +1,22 @@
-import sqlalchemy as sa
-import logging
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
 import datetime
-from .user import User
-from app.models import engine
-from sqlalchemy import ForeignKey
-
-metadata = sa.MetaData()
-logger = logging.getLogger('models.record')
-
-
-class Record:
-    record = sa.Table(
-        'record', metadata,
-        sa.Column('id', sa.INT, autoincrement=True, primary_key=True),
-        sa.Column('user_id', sa.INT, ForeignKey('User.id')),
-        sa.Column('day', sa.DATE, nullable=False),
-        sa.Column('count', sa.INT, default=0, nullable=False)
-    )
-
-    @classmethod
-    async def get_work_today(cls, name: str) -> dict:
-        async with engine.engine.acquire() as conn:
-            try:
-                date = datetime.date.today()
-                user_id = await User.get_user_id(name)
-                res = await conn.execute(
-                    cls.record.select().where(cls.record.c.day == date).where(cls.record.c.user_id == user_id))
-                temp = await res.fetchone()
-
-                res1 = await conn.execute(
-                    'select sum(count) from record where user_id = %s and day between (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) + 1 DAY)) and (select date_sub(curdate(), INTERVAL WEEKDAY(curdate()) - 5 DAY))', user_id)
-                temp1 = await res1.fetchone()
+from datetime import timedelta
+from sqlalchemy import and_
+from sqlalchemy.sql import func
+from app.models import db
+from app.models.models import User, Record
 
 
-                if temp is None and temp1[0] is None:
-                    return {
-                        'day': "0",
-                        'week': "0"
-                    }
-                elif temp is None:
-                    return {
-                        'day': "0",
-                        'week': str(temp1[0])
-                    }
-                elif temp1[0] is None:
-                    return {
-                        'day': str(temp[3]),
-                        'week': "0"
-                    }
-                else:
-                    return {
-                        'day': str(temp[3]),
-                        'week': str(temp1[0])
-                    }
-            except BaseException:
-                logger.error('Failed to get data from record')
-                raise
+def get_record(username: str):
+    now = datetime.date.today()
+    this_week_start = now - timedelta(days=now.weekday())
+    this_week_end = now + timedelta(days=6 - now.weekday())
 
-    @classmethod
-    async def add_day_record(cls, name: str):
-        async with engine.engine.acquire() as conn:
-            try:
-                date = datetime.date.today()
-                user_id = await User.get_user_id(name)
+    user = User.query.filter_by(username=username).first()
+    today_record = Record.query.filter_by(user_id=user.id).filter_by(day=now).first()
+    week_record = db.session.query(func.sum(Record.count).label('sums')).select_from(Record). \
+        filter(and_(Record.day >= this_week_start, Record.day <= this_week_end)).first()
 
-                res = await conn.execute(
-                    cls.record.select().where(cls.record.c.day == date).where(cls.record.c.user_id == user_id))
-                temp = await res.fetchone()
-
-                if temp is None:
-                    task = await conn.begin()
-                    await conn.execute(cls.record.insert().values(user_id=user_id, day=date, count=1))
-                    await task.commit()
-                else:
-                    count = temp[3] + 1
-                    task = await conn.begin()
-                    await conn.execute(cls.record.update().where(cls.record.c.user_id == user_id).where(
-                        cls.record.c.day == date).values(count=count))
-                    await task.commit()
-            except BaseException:
-                logger.error('Failed to refresh record to database')
-                raise
+    return today_record.count, week_record.sums

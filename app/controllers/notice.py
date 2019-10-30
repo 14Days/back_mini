@@ -1,15 +1,24 @@
-from .base import Base
-from aiohttp import web
-from app.models.notice import Notice
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Blueprint
+from sqlalchemy.exc import SQLAlchemyError
+from app.utils.warpper import fail_warp, success_warp
+from app.models.notice import get_notice
+
+notice_page = Blueprint('notice', __name__, url_prefix='/notice')
 
 
-class NoticeHandler(Base):
-    # 请求通知接口
-    async def get_notice(self, request: web.BaseRequest):
-        try:
-            notice = await Notice.get_notice()
-            if notice is None:
-                return self.fail_warp('请求公告失败')
-            return self.success_warp(notice[3])
-        except BaseException as e:
-            return self.fail_warp('请求公告失败')
+@notice_page.route('', methods=['GET'])
+def notice():
+    try:
+        temp = get_notice()
+        if temp is None:
+            return fail_warp('没有通知')
+        else:
+            return success_warp({
+                'title': temp.title,
+                'content': temp.content
+            })
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')

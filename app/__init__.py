@@ -1,45 +1,32 @@
-from aiohttp import web
-import aiohttp_cors
-from .utils.logger import create_base_log
-from .middlewares.log import log_middleware
-from .router import register_routes
-from .models import engine
-from .utils.redis import redis
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Flask
+from flask_cors import CORS
+from app.utils.logger import create_base_log
+from app.config import FlaskConfig
+from app.controllers import register_routers
+from app.models import connect_db
+from app.utils.redis import engine
 
 
-async def create_app(config) -> web.Application:
-    """
-    返回aiohttp应用实例
-    :return: web.Application
-    """
-    # 创建logger
-    create_base_log(config['app'])
+def new_flask_app():
+    # 创建基础logger
+    create_base_log()
 
-    # 获取顶级实例注册路由
-    app = web.Application()
-    app.middlewares.append(log_middleware)
-    register_routes(app)
+    app = Flask(__name__)
+    CORS(app)
 
-    # 配置跨域访问
-    cors = aiohttp_cors.setup(app, defaults={
-        "*": aiohttp_cors.ResourceOptions(
-            allow_credentials=True,
-            allow_headers="*",
-            expose_headers="*"
-        )
-    })
+    # 添加配置文件
+    app.config.from_object(FlaskConfig)
 
-    for route in list(app.router.routes()):
-        cors.add(route)
+    # 注册路由
+    register_routers(app)
 
-    # 连接数据库
-    await engine.connect_db(config.get('database'))
+    # 链接数据库
+    connect_db(app=app)
 
-    # 连接redis
-    await redis.connect_redis(config.get('redis'))
-
-    # 注册关闭函数
-    app.on_cleanup.append(engine.close_db)
-    app.on_cleanup.append(redis.close_redis)
+    # 链接redis
+    engine.connect_it(app)
 
     return app

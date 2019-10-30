@@ -1,32 +1,27 @@
-from aiohttp import web
-from .base import Base
-from app.models.imgs import Imgs
-from app.models.imgs_tag import ImgsTag
-from app.models.record import Record
-from app.models.user_imgs import UserImgs
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Blueprint, request, g
+from sqlalchemy.exc import SQLAlchemyError
+from app.utils.warpper import success_warp, fail_warp
+from app.models.tag import tag_it
+
+tag_page = Blueprint('tag', __name__, url_prefix='/tag')
 
 
-class TagHandler(Base):
-    # 提交已经打标完成的图片
-    async def post_taged_img(self, request: web.BaseRequest):
-        data = await request.json()
-        name = request['name']
+@tag_page.route('', methods=['POST'])
+def tag_img():
+    username = g.username
+    data = request.json
+    img_id = data.get('img_id')
+    tag = data.get('tag')
 
-        if data is None:
-            return self.fail_warp('参数不能为空')
-        img_id = data.get('img_id')
-        tag_id = data.get('tag')
-        type = data.get('type')
+    if img_id is None or tag is None or \
+            img_id == '':
+        return fail_warp('参数错误')
 
-        try:
-            # 标记img表中对应图片为已打标
-            await Imgs.change_istaged(img_id)
-            # 为提交的图片添加标签
-            await ImgsTag.add_tag(img_id, tag_id)
-            # 用户日打标数加一
-            await Record.add_day_record(name)
-            if type == 1:
-                await UserImgs.delete_unknown_img(name, img_id)
-            return self.success_warp('图片提交完成')
-        except BaseException:
-            return self.fail_warp('提交失败')
+    try:
+        tag_it(img_id, tag, username)
+        return success_warp('打标成功')
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')

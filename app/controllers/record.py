@@ -1,14 +1,22 @@
-from .base import Base
-from app.models.record import Record
-from aiohttp import web
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Blueprint, g
+from sqlalchemy.exc import SQLAlchemyError
+from app.utils.warpper import success_warp, fail_warp
+from app.models.record import get_record
+
+record_page = Blueprint('record', __name__, url_prefix='/record')
 
 
-class RecordHandler(Base):
-    # 返回打标数
-    async def get_work_record(self, request: web.BaseRequest):
-        try:
-            name = request['name']
-            day_count = await Record.get_work_today(name)
-            return self.success_warp(day_count)
-        except BaseException:
-            return self.fail_warp('请求打标数失败')
+@record_page.route('', methods=['GET'])
+def get_count():
+    username = g.username
+    try:
+        today, week_record = get_record(username)
+        return success_warp({
+            'day': today,
+            'week': int(week_record)
+        })
+    except SQLAlchemyError:
+        return fail_warp('数据库操作失败')

@@ -1,23 +1,24 @@
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
 import logging
-import aioredis
+from flask import Flask
+import redis
 
 logger = logging.getLogger('main.redis')
 
 
-class Redis:
-    redis = None
+class ConnectRedis:
+    engine = None
 
-    async def connect_redis(self, config):
+    def connect_it(self, app: Flask):
+        config = app.config['REDIS']
         try:
-            self.redis = await aioredis.create_redis(
-                'redis://:{}@{}:{}/0?encoding=utf-8'.format(config['password'], config['host'], config['port']))
+            self.engine = redis.Redis(host=config['host'], password=config['password'], port=config['port'])
             logger.info('Connect redis successfully')
-        except aioredis.errors as e:
+        except redis.exceptions as e:
             logger.error('Failed to connect redis', exc_info=True)
-
-    async def close_redis(self, app):
-        self.redis.close()
-        await self.redis.wait_closed()
+            raise e
 
 
-redis = Redis()
+engine = ConnectRedis()

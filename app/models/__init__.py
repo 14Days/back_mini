@@ -1,24 +1,27 @@
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
 import logging
-from aiomysql.sa import create_engine, Error
+from flask import Flask
+from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy.exc import SQLAlchemyError
 
 logger = logging.getLogger('main.models')
 
-
-class DBEngine:
-    engine = None
-
-    async def connect_db(self, config):
-        try:
-            self.engine = await create_engine(minsize=config.get('pool'), user=config.get('user'),
-                                              password=config.get('password'), host=config.get('host'),
-                                              port=config.get('port'), db=config.get('db'))
-            logger.info('Connect db successfully')
-        except Error as e:
-            logger.error('Failed to connect db', exc_info=True)
-
-    async def close_db(self, app):
-        self.engine.close()
-        await self.engine.wait_closed()
+db = SQLAlchemy()
 
 
-engine = DBEngine()
+def connect_db(app: Flask):
+    try:
+        db.init_app(app)
+        logger.info('Connect db successfully')
+    except BaseException as e:
+        logger.error('Failed to connect db', exc_info=True)
+
+
+def session_commit():
+    try:
+        db.session.commit()
+    except SQLAlchemyError as e:
+        db.session.rollback()
+        raise e

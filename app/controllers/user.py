@@ -1,83 +1,91 @@
-from aiohttp import web
-from .base import Base
-from app.utils.message import create_verify_code, set_code_in_redis, send_message, get_code_in_redis
-from app.models.user import User
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Blueprint, request
+from sqlalchemy.exc import SQLAlchemyError
+from redis.exceptions import RedisError
+from requests.exceptions import RequestException
+from app.utils.warpper import success_warp, fail_warp
+from app.models.user import check_phone, check_user, add_user, user_login
+from app.utils.message import \
+    create_verify_code, \
+    set_code_in_redis, \
+    send_message, \
+    get_code_in_redis
 from app.utils.token import create_token, set_name_in_redis
 
+user_page = Blueprint('user', __name__, url_prefix='/user')
 
-class UserHandler(Base):
-    # 注册接口
-    async def send_verify_code(self, request: web.BaseRequest):
-        try:
-            phone_number = request.query.get('phone')
 
-            if phone_number is None:
-                return self.fail_warp('缺少参数')
+@user_page.route('/code', methods=['GET'])
+def send_verify_code():
+    phone = request.args.get('phone')
 
-            if phone_number == '':
-                return self.fail_warp('参数不能为空字符串')
+    if phone is None or phone == '':
+        return fail_warp('参数错误')
 
-            if not await User.check_phone(phone_number):
-                return self.fail_warp('已存在电话号码')
+    try:
+        if check_phone(phone) is not None:
+            return fail_warp('电话号码已注册')
+        code = create_verify_code()
+        set_code_in_redis(phone, code)
+        send_message(phone, code)
+        return success_warp('发送成功')
+    except SQLAlchemyError:
+        return fail_warp('数据库操作失败')
+    except RedisError:
+        return fail_warp('redis操作失败')
+    except RequestException:
+        return fail_warp('验证码发送失败')
 
-            code = create_verify_code()
-            await set_code_in_redis(phone_number, code)
-            result = await send_message(phone_number, code)
-            if not result:
-                return self.fail_warp('短信发送失败')
-            return self.success_warp('短信发送成功')
-        except BaseException as e:
-            return self.fail_warp('数据库请求失败')
 
-    async def register_account(self, request: web.BaseRequest):
-        try:
-            data = await request.json()
-            name = data.get('name')
-            password = data.get('password')
-            phone = data.get('phone')
-            code = data.get('code')
+@user_page.route('/account', methods=['POST'])
+def register_account():
+    data = request.json
+    username = data.get('name')
+    password = data.get('password')
+    phone = data.get('phone')
+    code = data.get('code')
 
-            if phone is None or code is None:
-                return self.fail_warp('缺少参数')
+    if phone is None or code is None or username is None or password is None or \
+            phone == '' or code == '' or username == '' or password == '':
+        return fail_warp('参数错误')
 
-            if phone == '' or code == '' or name == '' or password == '':
-                return self.fail_warp('参数不能为空')
+    try:
+        if check_user(username) is not None:
+            return fail_warp('用户已存在')
+        if code == get_code_in_redis(phone):
+            add_user(username, password, phone)
+            return success_warp('注册成功')
+        else:
+            return fail_warp('验证码错误')
+    except SQLAlchemyError:
+        return fail_warp('数据库操作失败')
+    except RedisError:
+        return fail_warp('redis操作失败')
+    except RuntimeError:
+        return fail_warp('验证码过期')
 
-            if not await User.check_user(name):
-                return self.fail_warp('用户名已存在')
 
-            if code == await get_code_in_redis(phone):
-                await User.add_user(name, password, phone)
-                return self.success_warp('验证成功')
-            else:
-                return self.fail_warp('验证码错误')
-        except BaseException as e:
-            return self.fail_warp('数据库请求失败')
+@user_page.route('/authorization', methods=['POST'])
+def login():
+    data = request.json
+    username = data.get('name')
+    password = data.get('password')
 
-    # 登录接口
-    async def login(self, request: web.BaseRequest):
-        try:
-            data = await request.json()
-            name = data.get('name')
-            password = data.get('password')
+    if username is None or password is None or \
+            username == '' or password == '':
+        return fail_warp('参数错误')
 
-            if name is None or password is None:
-                return self.fail_warp('缺少参数')
-
-            if name == '' or password == '':
-                return self.fail_warp('参数不能为空')
-
-            if await User.check_user(name):
-                return self.fail_warp('用户名不存在')
-
-            if await User.check_password(name, password):
-                token = create_token(name)
-                try:
-                    await set_name_in_redis(name, token)
-                except BaseException as e:
-                    return self.fail_warp('Redis存储失败')
-                return self.success_warp(str(token, encoding='utf-8'))
-            else:
-                return self.fail_warp('登录失败')
-        except BaseException as e:
-            return self.fail_warp('数据库请求失败')
+    try:
+        temp = user_login(username, password)
+        if temp is not None:
+            token = create_token(temp.username)
+            set_name_in_redis(temp.username, token)
+            return success_warp(str(token, encoding='utf-8'))
+        else:
+            return fail_warp('登陆失败')
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')
+    except RedisError:
+        return fail_warp('token保存错误')

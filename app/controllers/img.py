@@ -1,64 +1,79 @@
-from .base import Base
-from aiohttp import web
-from app.models.imgs import Imgs
-from app.models.user_imgs import UserImgs
+# -*-coding:utf8-*-
+__author__ = 'Abbott'
+
+from flask import Blueprint, request, g
+from sqlalchemy.exc import SQLAlchemyError
+from app.utils.warpper import success_warp, fail_warp
+from app.models.img import get_swiper_item, get_tag_item, untag_img, get_unknown_img
+
+img_page = Blueprint('img', __name__, url_prefix='/img')
 
 
-class ImgHandler(Base):
-    # 请求轮播图
-    async def get_six_imgs(self, request: web.BaseRequest):
-        try:
-            lists = await Imgs.return_six_images()
-            data = []
+@img_page.route('/cycle', methods=['GET'])
+def get_swiper():
+    try:
+        images = get_swiper_item()
+        data = []
+        for image in images:
+            data.append(image.img_url)
 
-            for item in lists:
-                temp = dict(item).get('img_url')
-                if temp is not None:
-                    data.append(temp)
+        return success_warp(data)
+    except SQLAlchemyError:
+        return fail_warp('数据库操作失败')
 
-            if data is None:
-                return self.fail_warp('请求轮播图失败')
-            return self.success_warp(data)
-        except BaseException as e:
-            return self.fail_warp('请求轮播图失败')
 
-    # 请求未被打标的图片
-    async def get_untabed_imgs(self, request: web.BaseRequest):
-        try:
-            num = request.query.get('num')
-            res = await Imgs.return_untaged_imgs(int(num))
-            print(res)
-            data = []
-            for item in res:
-                data.append({
-                    'img_id': item[0],
-                    'img_url': item[1]
+@img_page.route('/tags', methods=['GET'])
+def get_tags():
+    try:
+        all_tags = get_tag_item()
+        data = []
+        for first in all_tags:
+            second_tags = []
+            for second in first.second_tag:
+                second_tags.append({
+                    'id': second.id,
+                    'tag': second.tag
                 })
+            data.append({
+                'top': first.tag,
+                'second': second_tags
+            })
 
-            if data is None:
-                return self.fail_warp('请求图片失败')
-            return self.success_warp(data)
-        except BaseException as e:
-            return self.fail_warp("请求图片失败")
+        return success_warp(data)
+    except SQLAlchemyError:
+        return fail_warp('数据库操作失败')
 
-    # 提交搁置图片
-    async def post_unknown_imgs(self, request: web.BaseRequest):
-        try:
-            data = await request.json()
-            img_id = data['img_id']
-            name = request['name']
-            await Imgs.change_iskonwn(img_id)
-            await UserImgs.add_unknown_img(name, img_id)
-            return self.success_warp('请求成功')
-        except BaseException:
-            return self.fail_warp('添加搁置图片失败')
 
-    # 请求搁置图片
-    async def get_unknown_imgs(self, request: web.BaseRequest):
-        try:
-            name = request['name']
-            res = await UserImgs.get_unknown_img(name)
-            return self.success_warp(res)
-        except BaseException:
-            return self.fail_warp('请求搁置图片失败')
+@img_page.route('/imgs', methods=['GET'])
+def get_untabed_imgs():
+    num = request.args.get('num')
+    if num is None:
+        return fail_warp('参数错误')
+    username = g.username
+    try:
+        images = untag_img(num, username)
+        data = []
+        for image in images:
+            data.append({
+                'id': image.id,
+                'url': image.img_url
+            })
+        return success_warp(data)
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')
 
+
+@img_page.route('/unknown', methods=['GET'])
+def get_unknown():
+    username = g.username
+    try:
+        images = get_unknown_img(username)
+        data = []
+        for image in images:
+            data.append({
+                'id': image.id,
+                'url': image.img_url
+            })
+        return success_warp(data)
+    except SQLAlchemyError:
+        return fail_warp('数据库操作错误')
