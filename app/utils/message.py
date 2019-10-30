@@ -31,7 +31,11 @@ def set_code_in_redis(phone: str, code: str):
 
 def get_code_in_redis(phone: str) -> str:
     try:
-        return engine.engine.get(phone)
+        temp = engine.engine.get(phone)
+        if temp is not None:
+            return temp.decode('utf-8')
+        else:
+            raise RuntimeError('验证码过期')
     except RedisError as e:
         logger.error('Failed to get data from redis', e)
         raise e
