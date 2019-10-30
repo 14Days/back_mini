@@ -6,15 +6,15 @@ from app.models import db
 # 用户风格对应表
 img_tag = db.Table(
     'imgs_tag',
-    db.Column('img_id', db.Integer, db.ForeignKey('Img.id'), primary_key=True),
-    db.Column('tag_id', db.Integer, db.ForeignKey('SecondLevel.id'), primary_key=True)
+    db.Column('img_id', db.Integer, db.ForeignKey('imgs.id'), primary_key=True),
+    db.Column('tag_id', db.Integer, db.ForeignKey('second_level.id'), primary_key=True)
 )
 
 # 用户图片表
 user_img = db.Table(
     'user_imgs',
-    db.Column('user_id', db.Integer, db.ForeignKey('User.id'), primary_key=True),
-    db.Column('img_id', db.Integer, db.ForeignKey('Img.id'), primary_key=True)
+    db.Column('user_id', db.Integer, db.ForeignKey('user.id'), primary_key=True),
+    db.Column('img_id', db.Integer, db.ForeignKey('imgs.id'), primary_key=True)
 )
 
 
