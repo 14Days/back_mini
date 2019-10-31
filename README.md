@@ -11,9 +11,9 @@
 
 - args：
 
-  |  key  |    value     |
-  | :---: | :----------: |
-  | phone | phone number |
+  |  Key  | Require |      Value       |
+  | :---: | :-----: | :--------------: |
+  | phone |  True   | 11位中国手机号码 |
 
 - response：
 
@@ -103,20 +103,17 @@
 
 - method：GET
 
-- args：headers
-
-  | key   | value       |
-  | ----- | ----------- |
-  | token | token value |
-
-  
+- header：token
 
 - response：
 
   ```json
   {
     "status": "success",
-    "data": "内容内容内容内容"
+    "data": {
+      "title": "样例",
+      "content": "内容"
+    }
   }
   ```
 
@@ -128,28 +125,21 @@
 
 - method：GET
 
-- args：headers
+- header：token
 
-- response：
+- response：（`http://pull.wghtstudio.cn/img/`为图片请求前缀）
 
   ```json
   {
     "status": "success",
     "data": [
-      "http://pull.wghtstudio.cn/img/1.jpg",
-      "http://pull.wghtstudio.cn/img/2.jpg",
-      "http://pull.wghtstudio.cn/img/3.jpg",
-      "http://pull.wghtstudio.cn/img/4.jpg",
-      "http://pull.wghtstudio.cn/img/5.jpg",
-      "http://pull.wghtstudio.cn/img/6.jpg"
+      "1.jpg",
+      "2.jpg",
+      "3.jpg",
+      "4.jpg",
+      "5.jpg",
+      "6.jpg"
     ]
-  }
-  ```
-  
-  ```json
-  {
-      "status": "error",
-      "err_msg": "jwt已过期,请重新登录"
   }
   ```
   
@@ -162,29 +152,84 @@
 
 - args：
 
-  | key  | value |
-  | ---- | ----- |
-  | num  | 1     |
+  | Key  | value |
+  | :--: | :---: |
+  | num  |  int  |
 
-- response
+- header：token
+
+- response：
 
   ```json
   {
     "status": "success",
     "data": [
-      "http://pull.wghtstudio.cn/img/2.jpg",
-      "http://pull.wghtstudio.cn/img/3.jpg",
-      "http://pull.wghtstudio.cn/img/4.jpg",
-      "http://pull.wghtstudio.cn/img/5.jpg",
-      "http://pull.wghtstudio.cn/img/6.jpg",
-      "http://pull.wghtstudio.cn/img/7.jpg"
+      {
+        "id": 1,
+        "url": "6.jpg"
+      },
+      {
+        "id": 1,
+        "url": "6.jpg"
+      }
     ]
   }
   ```
 
+#### 搁置图片
 
+- URL：/img/unknown
 
-### 标签
+- method：GET
+
+- header：token
+
+- response：
+
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "id": 1,
+        "url": "6.jpg"
+      },
+      {
+        "id": 1,
+        "url": "6.jpg"
+      }
+    ]
+  }
+  ```
+
+#### 获取标签
+
+- URL：/img/tags
+
+- method：GET
+
+- header：token
+
+- response：
+
+  ```json
+  {
+    "status": "success",
+    "data": [
+      {
+        "top": "风格",
+        "second": [
+          {
+            "id": 3,
+            "tag": "典雅的"
+          }
+        ]
+      }
+    ]
+  }
+  ```
+
+### 打标
 
 - URL: /tag
 
@@ -199,7 +244,7 @@
   }
   ```
 
-- response
+- response：
 
   ```json
   {
@@ -217,54 +262,21 @@
 
 ### 统计数据
 
-- URL: /record
+- URL：/record
 
-- method: Get
+- method：GET
 
-- args: headers
+- header：token
 
-- response
+- response：
 
   ```json
   {
       "status": "success",
       "data": {
-          "day": "0",
-          "week": "5"
+          "day": 0,
+          "week": 5
       }
   }
   ```
 
-### 搁置图片
-
-#### 请求搁置图片
-
-- URL: /img/unknown
-
-- method: Get
-
-- args:
-
-- response
-
-  ```json
-  {
-      "status": "success",
-      "data": [
-          {
-              "img_id": 1,
-              "img_url": "http://pull.wghtstudio.cn/img/1.jpg"
-          },
-          {
-              "img_id": 2,
-              "img_url": "http://pull.wghtstudio.cn/img/2.jpg"
-          },
-          {
-              "img_id": 4,
-              "img_url": "http://pull.wghtstudio.cn/img/4.jpg"
-          }
-      ]
-  }
-  ```
-
-  
