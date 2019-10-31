@@ -1,6 +1,7 @@
 # -*-coding:utf8-*-
 __author__ = 'Abbott'
 
+import re
 from flask import Blueprint, request
 from sqlalchemy.exc import SQLAlchemyError
 from redis.exceptions import RedisError
@@ -13,6 +14,7 @@ from app.utils.message import \
     send_message, \
     get_code_in_redis
 from app.utils.token import create_token, set_name_in_redis
+from app.utils.md5 import encode_md5
 
 user_page = Blueprint('user', __name__, url_prefix='/user')
 
@@ -51,6 +53,11 @@ def register_account():
             phone == '' or code == '' or username == '' or password == '':
         return fail_warp('参数错误')
 
+    if re.match('^[a-zA-Z][a-zA-Z0-9]{4,15}$', username) is None:
+        return fail_warp('用户名格式错误')
+
+    password = encode_md5(password)
+
     try:
         if check_user(username) is not None:
             return fail_warp('用户已存在')
@@ -76,6 +83,8 @@ def login():
     if username is None or password is None or \
             username == '' or password == '':
         return fail_warp('参数错误')
+
+    password = encode_md5(password)
 
     try:
         temp = user_login(username, password)
