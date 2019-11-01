@@ -26,3 +26,9 @@ def tag_it(img_id: int, tag: list, username: str):
     else:
         record.count = record.count + 1
     session_commit()
+
+
+def unknown_img(img_id):
+    temp = Img.query.filter_by(id=img_id).first()
+    temp.status = 2
+    session_commit()
