@@ -11,11 +11,11 @@ from app.utils.redis import engine
 
 
 def new_flask_app():
-    # 创建基础logger
-    create_base_log()
-
     app = Flask(__name__)
     CORS(app)
+
+    # 创建基础logger
+    create_base_log(app)
 
     # 添加配置文件
     app.config.from_object(FlaskConfig)

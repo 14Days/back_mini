@@ -2,15 +2,18 @@
 __author__ = 'Abbott'
 
 import logging
+from logging.handlers import TimedRotatingFileHandler
+from flask import Flask
 
-logger = logging.getLogger('main')
 
+def create_base_log(app: Flask):
+    handler = TimedRotatingFileHandler(
+        "flask.log", when="D", interval=1, backupCount=15,
+        encoding="UTF-8", delay=False, utc=False)
 
-def create_base_log():
-    logger.setLevel(level=logging.INFO)
-
-    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(module)s - %(message)s')
-    handler = logging.StreamHandler()
+    formatter = logging.Formatter('[%(asctime)s][%(filename)s:%(lineno)d][%(levelname)s][%(thread)d] - %(message)s')
     handler.setFormatter(formatter)
 
-    logger.addHandler(handler)
+    app.logger.addHandler(handler)
+
+    app.logger.setLevel(level=logging.INFO)
