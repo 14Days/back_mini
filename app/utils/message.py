@@ -2,9 +2,10 @@
 __author__ = 'Abbott'
 
 import random
+import json
 import logging
-import requests
-from requests.exceptions import RequestException
+from aliyunsdkcore.client import AcsClient
+from aliyunsdkcore.request import CommonRequest
 from redis.exceptions import RedisError
 from app.utils.redis import engine
 
@@ -41,17 +42,26 @@ def get_code_in_redis(phone: str) -> str:
         raise e
 
 
-def send_message(phone: str, code: str) -> bool:
-    try:
-        r = requests.post('http://sms_developer.zhenzikj.com/sms/send.do', data={
-            'appId': '102760',
-            'appSecret': 'bb85649d-bd4a-4f48-9c0e-57e4d7c30855',
-            'message': '欢迎注册家居设计小程序，您的注册验证码为:{0}（有效时间5分钟）'.format(code),
-            'number': phone
-        })
-        response = r.json()
-        if response['code'] != 0:
-            raise RequestException()
-    except RequestException as e:
-        logger.error('Failed to send code', e)
-        raise e
+def send_message(phone: str, code: str):
+    client = AcsClient('LTAI4FqGKCfJu6zoTeokp7Zw', 'j4bhVYO0NseW2rVrVwzkvM6mElu2yr', 'cn-hangzhou')
+    request = CommonRequest()
+    request.set_accept_format('json')
+    request.set_domain('dysmsapi.aliyuncs.com')
+    request.set_method('POST')
+    request.set_protocol_type('https')  # https | http
+    request.set_version('2017-05-25')
+    request.set_action_name('SendSms')
+
+    request.add_query_param('RegionId', "cn-hangzhou")
+    request.add_query_param('PhoneNumbers', phone)
+    request.add_query_param('SignName', "卷子生成系统")
+    request.add_query_param('TemplateCode', "SMS_174276701")
+    request.add_query_param('TemplateParam', json.dumps({
+        'code': code
+    }))
+
+    response = client.do_action_with_exception(request)
+    temp = json.loads(str(response, encoding='utf-8'))
+
+    if temp['Message'] != 'OK':
+        raise RuntimeError(temp['Message'])

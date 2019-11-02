@@ -5,7 +5,6 @@ import re
 from flask import Blueprint, request, current_app
 from sqlalchemy.exc import SQLAlchemyError
 from redis.exceptions import RedisError
-from requests.exceptions import RequestException
 from app.utils.warpper import success_warp, fail_warp
 from app.models.user import check_phone, check_user, add_user, user_login
 from app.utils.message import \
@@ -44,7 +43,7 @@ def send_verify_code():
     except RedisError as e:
         current_app.logger.error('{}-{}-redis操作失败'.format(e, phone))
         return fail_warp('redis操作失败')
-    except RequestException as e:
+    except RuntimeError as e:
         current_app.logger.error('{}-{}-验证码发送失败'.format(e, phone))
         return fail_warp('验证码发送失败')
 
