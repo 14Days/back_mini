@@ -12,7 +12,6 @@ from app.controllers.tag import tag_page
 
 def register_routers(app: Flask):
     app.register_blueprint(user_page)
-    jwt_middleware(notice_page)
     app.register_blueprint(notice_page)
     jwt_middleware(img_page)
     app.register_blueprint(img_page)

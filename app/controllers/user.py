@@ -97,6 +97,7 @@ def login():
 
     if username is None or password is None or \
             username == '' or password == '':
+        current_app.logger.error('{}-参数错误'.format(request.json))
         return fail_warp('参数错误')
 
     password = encode_md5(password)
@@ -106,10 +107,14 @@ def login():
         if temp is not None:
             token = create_token(temp.username)
             set_name_in_redis(temp.username, token)
+            current_app.logger.info('{}-登陆成功'.format(request.json))
             return success_warp(str(token, encoding='utf-8'))
         else:
+            current_app.logger.error('{}-登陆失败'.format(request.json))
             return fail_warp('登陆失败')
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        current_app.logger.error('{}-数据库操作错误'.format(e))
         return fail_warp('数据库操作错误')
-    except RedisError:
+    except RedisError as e:
+        current_app.logger.error('{}-token保存错误'.format(e))
         return fail_warp('token保存错误')

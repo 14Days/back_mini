@@ -1,7 +1,7 @@
 # -*-coding:utf8-*-
 __author__ = 'Abbott'
 
-from flask import Blueprint, request, g
+from flask import Blueprint, request, g, current_app
 from sqlalchemy.exc import SQLAlchemyError
 from app.utils.warpper import success_warp, fail_warp
 from app.models.img import get_swiper_item, get_tag_item, untag_img, get_unknown_img
@@ -17,8 +17,10 @@ def get_swiper():
         for image in images:
             data.append(image.img_url)
 
+        current_app.logger.info('返回成功')
         return success_warp(data)
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        current_app.logger.error('{}-数据库操作失败'.format(e))
         return fail_warp('数据库操作失败')
 
 
@@ -39,8 +41,10 @@ def get_tags():
                 'second': second_tags
             })
 
+        current_app.logger.info('返回成功')
         return success_warp(data)
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        current_app.logger.error('{}-数据库操作失败'.format(e))
         return fail_warp('数据库操作失败')
 
 
@@ -58,8 +62,10 @@ def get_untabed_imgs():
                 'id': image.id,
                 'url': image.img_url
             })
+        current_app.logger.info('返回成功')
         return success_warp(data)
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        current_app.logger.error('{}-数据库操作失败'.format(e))
         return fail_warp('数据库操作错误')
 
 
@@ -74,6 +80,8 @@ def get_unknown():
                 'id': image.id,
                 'url': image.img_url
             })
+        current_app.logger.info('返回成功')
         return success_warp(data)
-    except SQLAlchemyError:
+    except SQLAlchemyError as e:
+        current_app.logger.error('{}-数据库操作失败'.format(e))
         return fail_warp('数据库操作错误')

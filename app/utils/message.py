@@ -3,43 +3,29 @@ __author__ = 'Abbott'
 
 import random
 import json
-import logging
 from aliyunsdkcore.client import AcsClient
 from aliyunsdkcore.request import CommonRequest
-from redis.exceptions import RedisError
 from app.utils.redis import engine
-
-logger = logging.getLogger('main.message')
 
 
 def create_verify_code() -> str:
     code = ''
     for i in range(4):
         code += str(random.randint(0, 9))
-    logger.info('Create verify code successfully')
     return code
 
 
 def set_code_in_redis(phone: str, code: str):
-    try:
-        engine.engine.set(phone, code)
-        engine.engine.expire(phone, 5 * 60)
-        logger.info('Set code in redis successfully')
-    except RedisError as e:
-        logger.error('Failed to set data to redis', e)
-        raise e
+    engine.engine.set(phone, code)
+    engine.engine.expire(phone, 5 * 60)
 
 
 def get_code_in_redis(phone: str) -> str:
-    try:
-        temp = engine.engine.get(phone)
-        if temp is not None:
-            return temp.decode('utf-8')
-        else:
-            raise RuntimeError('验证码过期')
-    except RedisError as e:
-        logger.error('Failed to get data from redis', e)
-        raise e
+    temp = engine.engine.get(phone)
+    if temp is not None:
+        return temp.decode('utf-8')
+    else:
+        raise RuntimeError('验证码过期')
 
 
 def send_message(phone: str, code: str):
